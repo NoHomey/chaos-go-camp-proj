@@ -1,4 +1,4 @@
-package validator
+package fields
 
 import lib "github.com/go-playground/validator/v10"
 

@@ -13,6 +13,11 @@ type UUID struct {
 	impl.UUID
 }
 
+//Wrap wraps a UUID
+func Wrap(id impl.UUID) UUID {
+	return UUID{id}
+}
+
 //Value implements the driver.Valuer interface.
 func (id UUID) Value() (driver.Value, error) {
 	b := [16]byte(id.UUID)

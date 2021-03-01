@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/NoHomey/chaos-go-camp-proj/mysql/args"
 	"github.com/NoHomey/chaos-go-camp-proj/mysql/errors"
 	sqluuid "github.com/NoHomey/chaos-go-camp-proj/mysql/types/uuid"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/model"
@@ -35,7 +36,7 @@ type userRepo struct {
 
 func (repo userRepo) Create(ctx context.Context, data UserData) error {
 	sql := "INSERT INTO User(name, email, password) VALUES (?, ?, ?)"
-	args := []interface{}{data.Name, data.Email, data.PasswordHash}
+	args := args.Args(data.Name, data.Email, data.PasswordHash)
 	_, err := repo.db.ExecContext(ctx, sql, args...)
 	if err != nil {
 		return errors.Wrap(err, sql, args)
@@ -45,7 +46,7 @@ func (repo userRepo) Create(ctx context.Context, data UserData) error {
 
 func (repo userRepo) FindByEmail(ctx context.Context, email string) (model.User, error) {
 	sql := "SELECT id, name, email, password, registered_at, last_modified_at FROM User WHERE email = ?"
-	args := []interface{}{email}
+	args := args.Args(email)
 	var user user
 	read := []interface{}{
 		&user.id,
@@ -61,9 +62,6 @@ func (repo userRepo) FindByEmail(ctx context.Context, email string) (model.User,
 	}
 	return &user, nil
 }
-
-//compile time contract check
-var _ model.User = &user{}
 
 type user struct {
 	id             sqluuid.UUID

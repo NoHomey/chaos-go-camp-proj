@@ -7,6 +7,7 @@ CREATE TABLE User
 ,name
     VARCHAR(64)
     NOT NULL
+    CHECK (LENGTH(name) BETWEEN 3 AND 64)
 ,email
     VARCHAR(255)
     UNIQUE

@@ -39,8 +39,11 @@ func Wrap(err error, sqlText string, args []interface{}) QueryErr {
 		return ErrNotFound{query}
 	}
 	if driverErr, ok := err.(*mysql.MySQLError); ok {
-		if driverErr.Number == errcode.ERR_DUPLICATE_ENTRY {
+		switch driverErr.Number {
+		case errcode.DuplicateEntry:
 			return ErrExists{err, query}
+		case errcode.ConstraintViolated:
+			return ErrConstraint{err, query}
 		}
 	}
 	return UnknownErr{err, query}
@@ -102,4 +105,24 @@ func (err ErrNotFound) Query() *Query {
 //Unwrap implements EmptyResultErr.
 func (err ErrNotFound) Unwrap() error {
 	return sql.ErrNoRows
+}
+
+//ErrConstraint is used to report that a check constaint was violated.
+type ErrConstraint struct {
+	err error
+	qry *Query
+}
+
+func (err ErrConstraint) Error() string {
+	return "MySQL error: Check constrained violated"
+}
+
+//Query implements EmptyResultErr.
+func (err ErrConstraint) Query() *Query {
+	return err.qry
+}
+
+//Unwrap implements EmptyResultErr.
+func (err ErrConstraint) Unwrap() error {
+	return err.err
 }

@@ -1,4 +1,7 @@
 package errcode
 
-//ERR_DUPLICATE_ENTRY is the error code for ERROR Duplicate entry.
-const ERR_DUPLICATE_ENTRY = 1062
+//DuplicateEntry is the error code for ERROR Duplicate entry.
+const DuplicateEntry = 1062
+
+//ConstraintViolated is the error code for ERROR Check constraint is violated.
+const ConstraintViolated = 3819

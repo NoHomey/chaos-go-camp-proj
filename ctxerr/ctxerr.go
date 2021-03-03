@@ -61,7 +61,7 @@ func (e InvalData) Context() Context {
 	}
 }
 
-//NewInvalData createds new InvalData error.
+//NewInvalData constructs InvalData error.
 func NewInvalData(err error, fields []string) Error {
 	return InvalData{err, fields}
 }
@@ -91,6 +91,11 @@ func (e NotAuthed) Context() Context {
 	}
 }
 
+//NewNotAuthed constructs NotAuthed error.
+func NewNotAuthed(err error) Error {
+	return NotAuthed{err}
+}
+
 //Internal wraps error signaling it is an internal one.
 type Internal struct {
 	wrapped error
@@ -116,6 +121,11 @@ func (e Internal) Context() Context {
 	}
 }
 
+//NewInternal constructs Internal error.
+func NewInternal(err error) Error {
+	return Internal{err}
+}
+
 //BadFormat wraps error due to bad formating.
 type BadFormat struct {
 	wrapped error
@@ -139,4 +149,9 @@ func (e BadFormat) Context() Context {
 	return Context{
 		Name: "bad-format",
 	}
+}
+
+//NewBadFormat constructs BadFormat error.
+func NewBadFormat(err error) Error {
+	return BadFormat{err}
 }

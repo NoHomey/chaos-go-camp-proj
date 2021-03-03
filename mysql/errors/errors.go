@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -37,6 +38,9 @@ func Wrap(err error, sqlText string, args []interface{}) QueryErr {
 	query := &Query{sqlText, args}
 	if err == sql.ErrNoRows {
 		return ErrNotFound{query}
+	}
+	if err == context.Canceled || err == context.DeadlineExceeded {
+		return ErrTimeout{err, query}
 	}
 	if driverErr, ok := err.(*mysql.MySQLError); ok {
 		switch driverErr.Number {
@@ -124,5 +128,25 @@ func (err ErrConstraint) Query() *Query {
 
 //Unwrap implements EmptyResultErr.
 func (err ErrConstraint) Unwrap() error {
+	return err.err
+}
+
+//ErrTimeout is used to report that query timeouted.
+type ErrTimeout struct {
+	err error
+	qry *Query
+}
+
+func (err ErrTimeout) Error() string {
+	return "Query timeouted"
+}
+
+//Query implements EmptyResultErr.
+func (err ErrTimeout) Query() *Query {
+	return err.qry
+}
+
+//Unwrap implements EmptyResultErr.
+func (err ErrTimeout) Unwrap() error {
 	return err.err
 }

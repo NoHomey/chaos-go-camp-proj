@@ -9,6 +9,12 @@ type User struct {
 	Password string `json:"password" validate:"min=8,max=32,password"`
 }
 
+//Auth represents authentication data.
+type Auth struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"min=8,max=32,password"`
+}
+
 //RegisterPasswordValidator registers validator for password.
 func RegisterPasswordValidator(validate *validator.Validate) {
 	validate.RegisterValidation("password", func(fl validator.FieldLevel) bool {

@@ -188,16 +188,16 @@ func (srvc service) decodeRefreshToken(refresh SyncToken) (*repo.AccessData, ctx
 	accessID, err := uuid.Parse(jsonToken.Jti)
 	if err != nil {
 		srvc.logger.Error(
-			"Failed to parse UUID string",
-			zap.String("uudi str", jsonToken.Jti),
+			"Failed to parse PASETO Token ID UUID string",
+			zap.String("uuidString", jsonToken.Jti),
 		)
 		return nil, ctxerr.NewInternal(err)
 	}
 	userID, err := uuid.Parse(jsonToken.Subject)
 	if err != nil {
 		srvc.logger.Error(
-			"Failed to parse UUID string",
-			zap.String("uudi str", jsonToken.Subject),
+			"Failed to parse PASETO Subject UUID string",
+			zap.String("uuidString", jsonToken.Subject),
 		)
 		return nil, ctxerr.NewInternal(err)
 	}

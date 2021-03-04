@@ -29,7 +29,7 @@ type Token struct {
 type Service interface {
 	GrantAccess(ctx context.Context, user model.User) (*Token, ctxerr.Error)
 	RemExpired(ctx context.Context) ctxerr.Error
-	RefreshAccess(ctx context.Context, refresh SyncToken) (*SyncToken, model.Access, ctxerr.Error)
+	RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, ctxerr.Error)
 	RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.Error
 }
 
@@ -103,7 +103,7 @@ func (srvc service) RemExpired(ctx context.Context) ctxerr.Error {
 	return nil
 }
 
-func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (*SyncToken, model.Access, ctxerr.Error) {
+func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, ctxerr.Error) {
 	data, cerr := srvc.decodeRefreshToken(refresh)
 	if cerr != nil {
 		return nil, nil, cerr
@@ -138,7 +138,7 @@ func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (*Sync
 		zap.String("tokenID", tokenID.String()),
 		zap.String("userEmail", found.UserEmail()),
 	)
-	return &token, found, nil
+	return found, &token, nil
 }
 
 func (srvc service) RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.Error {
@@ -223,7 +223,7 @@ type tokenData struct {
 
 func (srvc service) genSyncToken(data tokenData) (SyncToken, time.Time, ctxerr.Error) {
 	now := time.Now()
-	sync, err := secrand.RandString(32)
+	sync, err := secrand.RandString(syncTokenCount)
 	if err != nil {
 		srvc.logger.Error(
 			"Failed to generate secure random string",
@@ -265,6 +265,8 @@ func initToken(data tokenData, now time.Time) paseto.JSONToken {
 		NotBefore:  now,
 	}
 }
+
+const syncTokenCount = 32
 
 const (
 	accessDuration  = 5 * time.Minute

@@ -18,5 +18,5 @@ func RandBytes(n uint) ([]byte, error) {
 //RandString generates securely random string with given length.
 func RandString(n uint) (string, error) {
 	b, err := RandBytes(n)
-	return base64.URLEncoding.EncodeToString(b), err
+	return base64.RawURLEncoding.EncodeToString(b), err
 }

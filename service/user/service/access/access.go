@@ -13,16 +13,19 @@ import (
 	"go.uber.org/zap"
 )
 
+//SyncToken is pair of PASETO token and synchronization token.
 type SyncToken struct {
 	Token string
 	Sync  string
 }
 
+//Token is pair of access and refresh SyncTokens.
 type Token struct {
 	Access  SyncToken
 	Refresh SyncToken
 }
 
+//Service abstracts the access service.
 type Service interface {
 	GrantAccess(ctx context.Context, user model.User) (*Token, ctxerr.Error)
 	RemExpired(ctx context.Context) ctxerr.Error
@@ -30,6 +33,7 @@ type Service interface {
 	RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.Error
 }
 
+//Use creates an access Service.
 func Use(repo repo.AccessRepo, logger *zap.Logger, refreshSecret []byte, accessSecret []byte) Service {
 	return service{repo, logger, refreshSecret, accessSecret}
 }

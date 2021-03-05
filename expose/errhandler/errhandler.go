@@ -40,7 +40,7 @@ func Handler(logger *zap.Logger) func(ctx *fiber.Ctx, err error) error {
 				send.Name = "unknown"
 			}
 		}
-		logger.Info(
+		logger.Error(
 			"Sending error",
 			zap.String("name", send.Name),
 			zap.String("message", send.Message),

@@ -53,6 +53,11 @@ func (err ErrEmailTaken) Context() ctxerr.Context {
 	}
 }
 
+//HttpStatusCode returns http status code for the error.
+func (err ErrEmailTaken) HttpStatusCode() int {
+	return 400
+}
+
 //ErrInvalCredents signals that invalid authentication credentials were given.
 type ErrInvalCredents struct {
 	wrapped error
@@ -76,6 +81,11 @@ func (err ErrInvalCredents) Context() ctxerr.Context {
 	return ctxerr.Context{
 		Name: "invalid-credentials",
 	}
+}
+
+//HttpStatusCode returns http status code for the error.
+func (err ErrInvalCredents) HttpStatusCode() int {
+	return 400
 }
 
 type service struct {

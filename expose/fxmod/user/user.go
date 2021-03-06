@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
-	"os"
 	"time"
 
+	"github.com/NoHomey/chaos-go-camp-proj/env"
 	userroutes "github.com/NoHomey/chaos-go-camp-proj/expose/routes/user"
 	miscfx "github.com/NoHomey/chaos-go-camp-proj/misc/fx"
 	"github.com/NoHomey/chaos-go-camp-proj/mysql/open"
@@ -22,9 +22,9 @@ import (
 var Module = fx.Options(
 	fx.Provide(func(lc fx.Lifecycle, logger *zap.Logger, validate *validator.Validate) (prime.Service, error) {
 		db, err := open.Open(open.DB{
-			User: os.Getenv(usernameKey),
-			Pass: os.Getenv(passwordKey),
-			Name: os.Getenv(dbNameKey),
+			User: env.Get(usernameKey),
+			Pass: env.Get(passwordKey),
+			Name: env.Get(dbNameKey),
 		})
 		if err != nil {
 			return nil, err
@@ -43,8 +43,8 @@ var Module = fx.Options(
 		accessService := access.Use(
 			repo.AccessRepoForDB(db),
 			logger,
-			[]byte(os.Getenv(refreshSecretKey)),
-			[]byte(os.Getenv(accessSecretKey)),
+			[]byte(env.Get(refreshSecretKey)),
+			[]byte(env.Get(accessSecretKey)),
 		)
 		lc.Append(miscfx.CronJob(func() {
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

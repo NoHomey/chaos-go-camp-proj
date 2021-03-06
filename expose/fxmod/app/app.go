@@ -1,8 +1,7 @@
 package app
 
 import (
-	"os"
-
+	"github.com/NoHomey/chaos-go-camp-proj/env"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/middleware/logger"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/reqlogger"
 	"github.com/NoHomey/chaos-go-camp-proj/logcrtr"
@@ -19,7 +18,7 @@ var Module = fx.Options(
 		app := fiber.New()
 		lc.Append(fx.Hook{
 			OnStart: miscfx.IgnoreContext(func() error {
-				go app.Listen(":" + os.Getenv(portKey))
+				go app.Listen(":" + env.Get(portKey))
 				return nil
 			}),
 			OnStop: miscfx.IgnoreContext(app.Shutdown),
@@ -27,7 +26,7 @@ var Module = fx.Options(
 		return app
 	}),
 	fx.Provide(func(lc fx.Lifecycle) reqlogger.Logger {
-		path := os.Getenv(reqLogPathKey)
+		path := env.Get(reqLogPathKey)
 		logger := reqlogger.New(logcrtr.Config(path))
 		lc.Append(fx.Hook{
 			OnStop: miscfx.IgnoreContext(logger.Sync),
@@ -35,7 +34,7 @@ var Module = fx.Options(
 		return logger
 	}),
 	fx.Provide(func(lc fx.Lifecycle) *zap.Logger {
-		path := os.Getenv(appLogPathKey)
+		path := env.Get(appLogPathKey)
 		logger := logcrtr.Config(path)
 		lc.Append(fx.Hook{
 			OnStop: miscfx.IgnoreContext(logger.Sync),

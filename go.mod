@@ -8,6 +8,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.5.0
 	github.com/google/uuid v1.2.0
 	github.com/o1egl/paseto v1.0.0
+	github.com/spf13/viper v1.7.1
 	go.uber.org/fx v1.13.1
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9

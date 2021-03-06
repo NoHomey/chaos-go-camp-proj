@@ -27,6 +27,7 @@ type Logger interface {
 	Request(req Request)
 	Response(req Request, d time.Duration, status int)
 	Error(req Request, d time.Duration, err Error)
+	Sync() error
 }
 
 //New constructs new request logger.
@@ -74,4 +75,8 @@ func (l impl) Error(req Request, d time.Duration, err Error) {
 		zap.Reflect("statusCode", err.StatusCode),
 		zap.Error(err.Err),
 	)
+}
+
+func (l impl) Sync() error {
+	return l.logger.Sync()
 }

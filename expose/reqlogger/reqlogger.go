@@ -11,6 +11,7 @@ type Request struct {
 	Method string
 	URL    string
 	IP     string
+	ID     string
 }
 
 //Error represents the data for and error to be logged.
@@ -42,6 +43,7 @@ type impl struct {
 func (l impl) Request(req Request) {
 	l.logger.Info(
 		"handling request",
+		zap.String("reqID", req.ID),
 		zap.String("url", req.URL),
 		zap.String("method", req.Method),
 		zap.String("ip", req.IP),
@@ -52,6 +54,7 @@ func (l impl) Request(req Request) {
 func (l impl) Response(req Request, d time.Duration, status int) {
 	l.logger.Info(
 		"sending result",
+		zap.String("reqID", req.ID),
 		zap.String("url", req.URL),
 		zap.String("method", req.Method),
 		zap.String("ip", req.IP),
@@ -64,6 +67,7 @@ func (l impl) Response(req Request, d time.Duration, status int) {
 func (l impl) Error(req Request, d time.Duration, err Error) {
 	l.logger.Error(
 		"sending error",
+		zap.String("reqID", req.ID),
 		zap.String("url", req.URL),
 		zap.String("method", req.Method),
 		zap.String("ip", req.IP),

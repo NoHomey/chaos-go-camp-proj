@@ -9,7 +9,7 @@ import (
 //Register registers the middleware.
 func Register(app *fiber.App, l reqlogger.Logger) {
 	app.Use(func(ctx *fiber.Ctx) error {
-		request.SetTime(ctx)
+		request.SetTimeAndID(ctx)
 		l.Request(request.FromFiberCtx(ctx))
 		return ctx.Next()
 	})

@@ -1,7 +1,10 @@
 package app
 
 import (
+	"time"
+
 	"github.com/NoHomey/chaos-go-camp-proj/env"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/errhandler"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/middleware/logger"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/reqlogger"
 	"github.com/NoHomey/chaos-go-camp-proj/logcrtr"
@@ -14,17 +17,6 @@ import (
 
 //Module bundles fx.Options for the app Fx Module.
 var Module = fx.Options(
-	fx.Provide(func(lc fx.Lifecycle) *fiber.App {
-		app := fiber.New()
-		lc.Append(fx.Hook{
-			OnStart: miscfx.IgnoreContext(func() error {
-				go app.Listen(":" + env.Get(portKey))
-				return nil
-			}),
-			OnStop: miscfx.IgnoreContext(app.Shutdown),
-		})
-		return app
-	}),
 	fx.Provide(func(lc fx.Lifecycle) reqlogger.Logger {
 		path := env.Get(reqLogPathKey)
 		logger := reqlogger.New(logcrtr.Config(path))
@@ -42,6 +34,22 @@ var Module = fx.Options(
 		return logger
 	}),
 	fx.Provide(validator.New),
+	fx.Provide(func(lc fx.Lifecycle, logger reqlogger.Logger) *fiber.App {
+		app := fiber.New(fiber.Config{
+			CaseSensitive: true,
+			ReadTimeout:   5 * time.Second,
+			WriteTimeout:  3 * time.Second,
+			ErrorHandler:  errhandler.Handler(logger),
+		})
+		lc.Append(fx.Hook{
+			OnStart: miscfx.IgnoreContext(func() error {
+				go app.Listen(":" + env.Get(portKey))
+				return nil
+			}),
+			OnStop: miscfx.IgnoreContext(app.Shutdown),
+		})
+		return app
+	}),
 	fx.Invoke(logger.Register),
 )
 

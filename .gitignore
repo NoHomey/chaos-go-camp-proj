@@ -16,3 +16,7 @@
 
 # Env dot files
 *.env
+
+# Log files
+*.slog
+*.log

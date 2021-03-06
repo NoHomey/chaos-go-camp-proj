@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
-	"github.com/NoHomey/chaos-go-camp-proj/expose/logger"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/reqlogger"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/utility/request"
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,7 +17,7 @@ type Error struct {
 }
 
 //Handler is the error handler creator.
-func Handler(l logger.Logger) func(ctx *fiber.Ctx, err error) error {
+func Handler(l reqlogger.Logger) func(ctx *fiber.Ctx, err error) error {
 	return func(ctx *fiber.Ctx, err error) error {
 		if err == nil {
 			return nil
@@ -44,7 +44,7 @@ func Handler(l logger.Logger) func(ctx *fiber.Ctx, err error) error {
 				send.Name = "unknown"
 			}
 		}
-		l.Error(request.FromFiberCtx(ctx), request.GetDuration(ctx), logger.Error{
+		l.Error(request.FromFiberCtx(ctx), request.GetDuration(ctx), reqlogger.Error{
 			Name:       send.Name,
 			Message:    send.Message,
 			Data:       send.Data,

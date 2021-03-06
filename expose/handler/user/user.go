@@ -7,7 +7,7 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/cookie"
-	"github.com/NoHomey/chaos-go-camp-proj/expose/logger"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/reqlogger"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/sendresult"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/data"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/service/access"
@@ -18,7 +18,7 @@ import (
 //Handler implements request handlers for the user.
 type Handler struct {
 	Service   prime.Service
-	ReqLogger logger.Logger
+	ReqLogger reqlogger.Logger
 }
 
 //SignUp signs user up.

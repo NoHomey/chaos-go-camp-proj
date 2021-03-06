@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/logger"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/utility/request"
 	"github.com/gofiber/fiber/v2"
-	"go.uber.org/zap"
 )
 
 //Error is the type of the error data.
@@ -16,8 +17,11 @@ type Error struct {
 }
 
 //Handler is the error handler creator.
-func Handler(logger *zap.Logger) func(ctx *fiber.Ctx, err error) error {
+func Handler(l logger.Logger) func(ctx *fiber.Ctx, err error) error {
 	return func(ctx *fiber.Ctx, err error) error {
+		if err == nil {
+			return nil
+		}
 		code := fiber.StatusBadRequest
 		var send Error
 		if e, ok := err.(ctxerr.Error); ok {
@@ -40,13 +44,13 @@ func Handler(logger *zap.Logger) func(ctx *fiber.Ctx, err error) error {
 				send.Name = "unknown"
 			}
 		}
-		logger.Error(
-			"Sending error",
-			zap.String("name", send.Name),
-			zap.String("message", send.Message),
-			zap.Reflect("data", send.Data),
-			zap.Reflect("status", code),
-		)
+		l.Error(request.FromFiberCtx(ctx), request.GetDuration(ctx), logger.Error{
+			Name:       send.Name,
+			Message:    send.Message,
+			Data:       send.Data,
+			StatusCode: code,
+			Err:        err,
+		})
 		return ctx.Status(code).JSON(fiber.Map{"error": send})
 	}
 }

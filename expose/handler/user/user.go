@@ -7,6 +7,7 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/cookie"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/logger"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/sendresult"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/data"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/service/access"
@@ -14,84 +15,82 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+//Handler implements request handlers for the user.
+type Handler struct {
+	Service   prime.Service
+	ReqLogger logger.Logger
+}
+
 //SignUp signs user up.
-func SignUp(service prime.Service) func(ctx *fiber.Ctx) error {
-	return func(ctx *fiber.Ctx) error {
-		user := new(data.User)
-		if err := ctx.BodyParser(user); err != nil {
-			return ctxerr.NewBadFormat(err)
-		}
-		srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
-		defer cancel()
-		err := service.SignUp(srvcCtx, *user)
-		if err != nil {
-			return err
-		}
-		return sendresult.SendRes(ctx, fiber.StatusCreated, true)
+func (h Handler) SignUp(ctx *fiber.Ctx) error {
+	user := new(data.User)
+	if err := ctx.BodyParser(user); err != nil {
+		return ctxerr.NewBadFormat(err)
 	}
+	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
+	defer cancel()
+	err := h.Service.SignUp(srvcCtx, *user)
+	if err != nil {
+		return err
+	}
+	return sendresult.SendAndLog(ctx, fiber.StatusCreated, true, h.ReqLogger)
 }
 
 //SignIn signs user in.
-func SignIn(service prime.Service) func(ctx *fiber.Ctx) error {
-	return func(ctx *fiber.Ctx) error {
-		auth := new(data.Auth)
-		if err := ctx.BodyParser(auth); err != nil {
-			return ctxerr.NewBadFormat(err)
-		}
-		srvcCtx, cancel := context.WithTimeout(ctx.Context(), 3*time.Second)
-		defer cancel()
-		user, token, err := service.SignIn(srvcCtx, *auth)
-		if err != nil {
-			return err
-		}
-		cookie.Set(ctx, refreshSyncTokenKey, token.Refresh.Sync)
-		cookie.Set(ctx, accessTokenKey, token.Access.Token)
-		return sendresult.SendRes(ctx, fiber.StatusOK, accessRes{
-			Name:            user.Name(),
-			Email:           user.Email(),
-			RefreshToken:    token.Refresh.Token,
-			AccessSyncToken: token.Access.Sync,
-		})
+func (h Handler) SignIn(ctx *fiber.Ctx) error {
+	auth := new(data.Auth)
+	if err := ctx.BodyParser(auth); err != nil {
+		return ctxerr.NewBadFormat(err)
 	}
+	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 3*time.Second)
+	defer cancel()
+	user, token, err := h.Service.SignIn(srvcCtx, *auth)
+	if err != nil {
+		return err
+	}
+	cookie.Set(ctx, refreshSyncTokenKey, token.Refresh.Sync)
+	cookie.Set(ctx, accessTokenKey, token.Access.Token)
+	return sendresult.SendAndLog(ctx, fiber.StatusOK, accessRes{
+		Name:            user.Name(),
+		Email:           user.Email(),
+		RefreshToken:    token.Refresh.Token,
+		AccessSyncToken: token.Access.Sync,
+	}, h.ReqLogger)
 }
 
 //SignOut signs user out.
-func SignOut(service prime.Service) func(ctx *fiber.Ctx) error {
-	return func(ctx *fiber.Ctx) error {
-		token, err := extractRefreshToken(ctx)
-		if err != nil {
-			return err
-		}
-		srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
-		defer cancel()
-		err = service.SignOut(srvcCtx, *token)
-		if err != nil {
-			return err
-		}
-		return sendresult.SendRes(ctx, fiber.StatusOK, true)
+func (h Handler) SignOut(ctx *fiber.Ctx) error {
+	token, err := extractRefreshToken(ctx)
+	if err != nil {
+		return err
 	}
+	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
+	defer cancel()
+	err = h.Service.SignOut(srvcCtx, *token)
+	if err != nil {
+		return err
+	}
+	return sendresult.SendAndLog(ctx, fiber.StatusOK, true, h.ReqLogger)
 }
 
 //ObtainAccess sends new access token.
-func ObtainAccess(service prime.Service) func(ctx *fiber.Ctx) error {
-	return func(ctx *fiber.Ctx) error {
-		token, err := extractRefreshToken(ctx)
-		if err != nil {
-			return err
-		}
-		srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
-		defer cancel()
-		access, accessToken, err := service.ObtainAccess(srvcCtx, *token)
-		if err != nil {
-			return err
-		}
-		cookie.Set(ctx, accessTokenKey, accessToken.Token)
-		return sendresult.SendRes(ctx, fiber.StatusOK, accessRes{
-			Name:            access.UserName(),
-			Email:           access.UserEmail(),
-			AccessSyncToken: accessToken.Sync,
-		})
+func (h Handler) ObtainAccess(ctx *fiber.Ctx) error {
+	token, err := extractRefreshToken(ctx)
+	if err != nil {
+		return err
 	}
+	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
+	defer cancel()
+	access, accessToken, err := h.Service.ObtainAccess(srvcCtx, *token)
+	if err != nil {
+		return err
+	}
+	cookie.Set(ctx, accessTokenKey, accessToken.Token)
+	return sendresult.SendAndLog(ctx, fiber.StatusOK, accessRes{
+		Name:            access.UserName(),
+		Email:           access.UserEmail(),
+		AccessSyncToken: accessToken.Sync,
+	}, h.ReqLogger)
 }
 
 func extractRefreshToken(ctx *fiber.Ctx) (*access.SyncToken, ctxerr.Error) {

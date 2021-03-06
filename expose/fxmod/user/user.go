@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"os"
+	"time"
 
 	userroutes "github.com/NoHomey/chaos-go-camp-proj/expose/routes/user"
 	miscfx "github.com/NoHomey/chaos-go-camp-proj/misc/fx"
@@ -45,6 +46,11 @@ var Module = fx.Options(
 			[]byte(os.Getenv(refreshSecretKey)),
 			[]byte(os.Getenv(accessSecretKey)),
 		)
+		lc.Append(miscfx.CronJob(func() {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			accessService.RemExpired(ctx)
+		}, time.Minute))
 		return prime.Use(userService, accessService), nil
 	}),
 	fx.Invoke(data.RegisterPasswordValidator),

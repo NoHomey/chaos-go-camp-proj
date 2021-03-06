@@ -16,7 +16,6 @@ type Service interface {
 	SignUp(ctx context.Context, user data.User) ctxerr.Error
 	SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, ctxerr.Error)
 	SignOut(ctx context.Context, refresh access.SyncToken) ctxerr.Error
-	CleanExpired(ctx context.Context) ctxerr.Error
 	ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, ctxerr.Error)
 }
 
@@ -49,10 +48,6 @@ func (srvc service) SignIn(ctx context.Context, data data.Auth) (model.User, *ac
 
 func (srvc service) SignOut(ctx context.Context, refresh access.SyncToken) ctxerr.Error {
 	return srvc.accessService.RevokeAccess(ctx, refresh)
-}
-
-func (srvc service) CleanExpired(ctx context.Context) ctxerr.Error {
-	return srvc.accessService.RemExpired(ctx)
 }
 
 func (srvc service) ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, ctxerr.Error) {

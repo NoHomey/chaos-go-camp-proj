@@ -15,7 +15,17 @@ import (
 
 //Module bundles fx.Options for the app Fx Module.
 var Module = fx.Options(
-	fx.Provide(fiber.New),
+	fx.Provide(func(lc fx.Lifecycle) *fiber.App {
+		app := fiber.New()
+		lc.Append(fx.Hook{
+			OnStart: miscfx.IgnoreContext(func() error {
+				go app.Listen(":" + os.Getenv(portKey))
+				return nil
+			}),
+			OnStop: miscfx.IgnoreContext(app.Shutdown),
+		})
+		return app
+	}),
 	fx.Provide(func(lc fx.Lifecycle) reqlogger.Logger {
 		path := os.Getenv(reqLogPathKey)
 		logger := reqlogger.New(logcrtr.Config(path))
@@ -39,4 +49,5 @@ var Module = fx.Options(
 const (
 	reqLogPathKey = "REQ_LOG_PATH"
 	appLogPathKey = "APP_LOG_PATH"
+	portKey       = "PORT"
 )

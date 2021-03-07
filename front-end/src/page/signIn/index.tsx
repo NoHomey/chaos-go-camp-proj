@@ -1,9 +1,9 @@
 import Layout from "../../layout/SignPage"
-import SignInput from "../../component/SignInput";
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
+import InputField from "../../component/InputField"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import Checkbox from "@material-ui/core/Checkbox"
+import Grid from "@material-ui/core/Grid"
+import Link from "@material-ui/core/Link"
 
 const links = (
     <Grid container>
@@ -14,7 +14,7 @@ const links = (
         </Grid>
         <Grid item>
             <Link href="#" variant="body2">
-                Don't have an account? Sign up
+                Don"t have an account? Sign up
             </Link>
         </Grid>
     </Grid>
@@ -23,13 +23,13 @@ const links = (
 export default function Page() {
     return (
         <Layout actionButtonLabel="Sign in" link={links}>
-            <SignInput
+            <InputField
                 label="Email address"
                 type="email"
                 required
                 autoComplete="email"
             />
-            <SignInput
+            <InputField
                 label="Password"
                 type="password"
                 required

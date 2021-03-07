@@ -1,12 +1,12 @@
 import CssBaseline from '@material-ui/core/CssBaseline';
 
-import SignIn from './page/signIn'
+import Page from './page/feedImport'
 
 function App() {
     return (
         <>
             <CssBaseline />
-            <SignIn />
+            <Page />
         </>
     );
 }

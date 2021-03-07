@@ -1,5 +1,5 @@
 import Layout from "../../layout/SignPage"
-import SignInput from "../../component/SignInput";
+import InputField from "../../component/InputField";
 import Link from '@material-ui/core/Link';
 
 const link = (
@@ -11,17 +11,17 @@ const link = (
 export default function Page() {
     return (
         <Layout actionButtonLabel="Sign up" link={link}>
-            <SignInput
+            <InputField
                 label="Name"
                 required
             />
-            <SignInput
+            <InputField
                 label="Email address"
                 type="email"
                 required
                 autoComplete="email"
             />
-            <SignInput
+            <InputField
                 label="Password"
                 type="password"
                 required

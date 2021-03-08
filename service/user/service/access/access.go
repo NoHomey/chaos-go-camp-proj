@@ -2,9 +2,11 @@ package access
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
+	"github.com/NoHomey/chaos-go-camp-proj/misc/base64"
 	"github.com/NoHomey/chaos-go-camp-proj/secrand"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/model"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/repo"
@@ -12,6 +14,36 @@ import (
 	"github.com/o1egl/paseto"
 	"go.uber.org/zap"
 )
+
+//ErrInvalSyncToken is used for reporting that a sync token is invalid.
+type ErrInvalSyncToken struct {
+	str string
+}
+
+func (err ErrInvalSyncToken) Error() string {
+	return fmt.Sprintf("Invalid Sync token: %s", err.str)
+}
+
+func (err ErrInvalSyncToken) Unwrap() error {
+	return nil
+}
+
+//Text returns human readable error text.
+func (err ErrInvalSyncToken) Text() string {
+	return "Invalid Sync token"
+}
+
+//Context returns error Context.
+func (err ErrInvalSyncToken) Context() ctxerr.Context {
+	return ctxerr.Context{
+		Name: "invalid-sync-token",
+	}
+}
+
+//HttpStatusCode returns http status code for the error.
+func (err ErrInvalSyncToken) HttpStatusCode() int {
+	return 400
+}
 
 //SyncToken is pair of PASETO token and synchronization token.
 type SyncToken struct {
@@ -166,6 +198,13 @@ func (srvc service) RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.
 }
 
 func (srvc service) decodeRefreshToken(refresh SyncToken) (*repo.AccessData, ctxerr.Error) {
+	if !isValidSyncToken(refresh.Sync) {
+		srvc.logger.Error(
+			"Got invalid sync token",
+			zap.String("syncToken", refresh.Sync),
+		)
+		return nil, ErrInvalSyncToken{refresh.Sync}
+	}
 	var jsonToken paseto.JSONToken
 	err := paseto.NewV2().Decrypt(refresh.Token, srvc.refreshSecret, &jsonToken, nil)
 	if err != nil {
@@ -266,7 +305,17 @@ func initToken(data tokenData, now time.Time) paseto.JSONToken {
 	}
 }
 
-const syncTokenCount = 32
+func isValidSyncToken(s string) bool {
+	if !base64.Test(s) || len(s) > maxSyncTokenLen {
+		return false
+	}
+	return true
+}
+
+const (
+	syncTokenCount  = 32
+	maxSyncTokenLen = 2 * syncTokenCount
+)
 
 const (
 	accessDuration  = 5 * time.Minute

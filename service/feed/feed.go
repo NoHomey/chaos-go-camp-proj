@@ -159,7 +159,7 @@ func (srvc service) fetchFeed(ctx context.Context, urlStr string) (*gofeed.Feed,
 	url, err := url.Parse(urlStr)
 	if err != nil {
 		srvc.logger.Error(
-			"failed to parse url",
+			"Failed to parse url",
 			zap.String("url", urlStr),
 			zap.Error(err),
 		)
@@ -168,7 +168,7 @@ func (srvc service) fetchFeed(ctx context.Context, urlStr string) (*gofeed.Feed,
 	req, err := http.NewRequestWithContext(ctx, "GET", url.String(), nil)
 	if err != nil {
 		srvc.logger.Error(
-			"failed to create new request",
+			"Failed to create new request",
 			zap.String("url", url.String()),
 			zap.Error(err),
 		)
@@ -177,7 +177,7 @@ func (srvc service) fetchFeed(ctx context.Context, urlStr string) (*gofeed.Feed,
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		srvc.logger.Error(
-			"failed to fetch feed",
+			"Failed to fetch feed",
 			zap.String("url", url.String()),
 			zap.Error(err),
 		)
@@ -187,14 +187,14 @@ func (srvc service) fetchFeed(ctx context.Context, urlStr string) (*gofeed.Feed,
 	feed, err := gofeed.NewParser().Parse(resp.Body)
 	if err != nil {
 		srvc.logger.Error(
-			"failed to parse feed",
+			"Failed to parse feed",
 			zap.String("url", url.String()),
 			zap.Error(err),
 		)
 		return nil, ErrParseFeed{err, url.String()}
 	}
 	srvc.logger.Info(
-		"fetched and parsed feed",
+		"Fetched and parsed feed",
 		zap.String("url", url.String()),
 	)
 	return feed, nil

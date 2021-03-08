@@ -10,9 +10,9 @@ require (
 	github.com/mmcdole/gofeed v1.1.0
 	github.com/o1egl/paseto v1.0.0
 	github.com/spf13/viper v1.7.1
+	go.mongodb.org/mongo-driver v1.4.6
 	go.uber.org/fx v1.13.1
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
-	golang.org/x/sys v0.0.0-20201210223839-7e3030f88018 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )

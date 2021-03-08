@@ -36,10 +36,10 @@ var Module = fx.Options(
 	fx.Provide(validator.New),
 	fx.Provide(func(lc fx.Lifecycle, logger reqlogger.Logger) *fiber.App {
 		app := fiber.New(fiber.Config{
-			CaseSensitive: true,
-			ReadTimeout:   5 * time.Second,
-			WriteTimeout:  3 * time.Second,
-			ErrorHandler:  errhandler.Handler(logger),
+			//CaseSensitive: true,
+			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 3 * time.Second,
+			ErrorHandler: errhandler.Handler(logger),
 		})
 		lc.Append(fx.Hook{
 			OnStart: miscfx.IgnoreContext(func() error {

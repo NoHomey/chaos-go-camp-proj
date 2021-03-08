@@ -5,6 +5,7 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/env"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/fxmod/app"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/fxmod/feed"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/fxmod/user"
 	"go.uber.org/fx"
 )
@@ -17,6 +18,7 @@ func main() {
 	fxApp := fx.New(fx.Options(
 		app.Module,
 		user.Module,
+		feed.Module,
 	))
 	fxApp.Run()
 }

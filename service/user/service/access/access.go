@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
-	"github.com/NoHomey/chaos-go-camp-proj/misc/base64"
+	"github.com/NoHomey/chaos-go-camp-proj/misc/base64url"
 	"github.com/NoHomey/chaos-go-camp-proj/secrand"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/model"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/repo"
@@ -306,7 +306,7 @@ func initToken(data tokenData, now time.Time) paseto.JSONToken {
 }
 
 func isValidSyncToken(s string) bool {
-	if !base64.Test(s) || len(s) > maxSyncTokenLen {
+	if !base64url.Test(s) || len(s) > maxSyncTokenLen {
 		return false
 	}
 	return true

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/env"
-	userroutes "github.com/NoHomey/chaos-go-camp-proj/expose/routes/user"
+	routes "github.com/NoHomey/chaos-go-camp-proj/expose/routes/user"
 	miscfx "github.com/NoHomey/chaos-go-camp-proj/misc/fx"
 	"github.com/NoHomey/chaos-go-camp-proj/mysql/open"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/data"
@@ -54,7 +54,7 @@ var Module = fx.Options(
 		return prime.Use(userService, accessService), nil
 	}),
 	fx.Invoke(data.RegisterPasswordValidator),
-	fx.Invoke(userroutes.Register),
+	fx.Invoke(routes.Register),
 )
 
 const (

@@ -78,18 +78,18 @@ func (err ErrParseFeed) HttpStatusCode() int {
 
 //Details represents feed details extracted from given URL.
 type Details struct {
-	URL         string
-	Title       string
-	Author      string
-	Description string
+	URL         string `json:"url"`
+	Title       string `json:"title"`
+	Author      string `json:"author"`
+	Description string `json:"description"`
 }
 
 //Item represents feed entry/item.
 type Item struct {
-	URL         string
-	Title       string
-	Description string
-	PublishedAt time.Time
+	URL         string    `json:"url"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	PublishedAt time.Time `json:"publishedAt"`
 }
 
 //Service abstracts the feed service.

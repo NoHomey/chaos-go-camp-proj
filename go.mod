@@ -7,6 +7,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gofiber/fiber/v2 v2.5.0
 	github.com/google/uuid v1.2.0
+	github.com/mmcdole/gofeed v1.1.0
 	github.com/o1egl/paseto v1.0.0
 	github.com/spf13/viper v1.7.1
 	go.uber.org/fx v1.13.1

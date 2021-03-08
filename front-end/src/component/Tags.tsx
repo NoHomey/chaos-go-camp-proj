@@ -17,21 +17,21 @@ export interface Props {
 const addIcon = <AddIcon />
 
 const useStyles = makeStyles(theme => ({
-    addTagBtn: {
-        margin: theme.spacing(2),
-    },
-    tags: {
-        marginBottom: theme.spacing(2),
+    addTagBtn: (props: Props) => ({
+        margin: theme.spacing(props.marginY),
+    }),
+    tags: (props: Props) => ({
+        marginBottom: theme.spacing(props.marginY),
         listStyle: "none",
         paddingInlineStart: 0
-    }
+    })
 }))
 
-const Tags: React.FC<Props> = ({ tags, marginY }) => {
-    const classes = useStyles()
+const Tags: React.FC<Props> = props => {
+    const classes = useStyles(props)
     return (
         <>
-            <Box display="flex" alignItems="center" my={marginY}>
+            <Box display="flex" alignItems="center" my={props.marginY}>
                 <Typography variant="h6" component="span">
                     Tags:
                 </Typography>
@@ -45,7 +45,7 @@ const Tags: React.FC<Props> = ({ tags, marginY }) => {
                     </Button>
             </Box>
         <Grid container spacing={2} component="ul" className={classes.tags}>
-            {tags.map(({value, priority}) => (
+            {props.tags.map(({value, priority}) => (
                 <Grid item component="li" key={value}>
                     <Chip
                         color={PriorityToColor(priority)}

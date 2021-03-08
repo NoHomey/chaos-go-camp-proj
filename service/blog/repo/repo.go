@@ -7,13 +7,17 @@ import (
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/level"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/rating"
+	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 //Repo is an abstraction for the blog repository.
 type Repo interface {
 	Save(ctx context.Context, data data.Blog) error
+	Fetch(ctx context.Context, count uint32, after *primitive.ObjectID) ([]model.Blog, error)
 }
 
 //UseCollection returns Repo wich uses the given collection.
@@ -41,6 +45,44 @@ func (r repo) Save(ctx context.Context, data data.Blog) error {
 		SavedAtField: time.Now(),
 	})
 	return err
+}
+
+func (r repo) Fetch(ctx context.Context, count uint32, after *primitive.ObjectID) ([]model.Blog, error) {
+	cursor, err := r.findPaged(ctx, count, after)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+	return decodeLimited(ctx, count, cursor)
+}
+
+func (r repo) findPaged(ctx context.Context, count uint32, after *primitive.ObjectID) (*mongo.Cursor, error) {
+	opts := options.Find()
+	opts.SetSort(bson.D{
+		{Key: "level", Value: 1},
+		{Key: "rating", Value: -1},
+		{Key: "_id", Value: 1}})
+	opts.SetLimit(int64(count))
+	filter := bson.M{}
+	if after != nil {
+		filter["_id"] = bson.E{Key: "$gt", Value: after}
+	}
+	return r.coll.Find(ctx, filter, opts)
+}
+
+func decodeLimited(ctx context.Context, limit uint32, cursor *mongo.Cursor) ([]model.Blog, error) {
+	blogs := make([]model.Blog, limit)
+	i := 0
+	for cursor.Next(ctx) {
+		b := new(blog)
+		cursor.Decode(b)
+		blogs[i] = b
+		i++
+	}
+	if err := cursor.Err(); err != nil {
+		return nil, err
+	}
+	return blogs[:i], nil
 }
 
 type blog struct {
@@ -112,6 +154,10 @@ func (b *blog) IsQickNotePublic() bool {
 
 func (b *blog) SavedAt() time.Time {
 	return b.SavedAtField
+}
+
+func (b *blog) StartedAt() *time.Time {
+	return b.StartedAtOptField
 }
 
 func (b *blog) FinishedAt() *time.Time {

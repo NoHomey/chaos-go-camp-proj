@@ -46,6 +46,7 @@ func (r repo) Save(ctx context.Context, data data.Blog) error {
 type blog struct {
 	IDField               primitive.ObjectID `bson:"_id,omitempty"`
 	FeedURLField          string             `bson:"feedURL"`
+	WebsiteField          string             `bson:"website"`
 	AuthorField           string             `bson:"author"`
 	TitleField            string             `bson:"title"`
 	DescriptionField      string             `bson:"descrition"`
@@ -71,6 +72,10 @@ func (b *blog) ID() primitive.ObjectID {
 
 func (b *blog) FeedURL() string {
 	return b.FeedURLField
+}
+
+func (b *blog) Website() string {
+	return b.WebsiteField
 }
 
 func (b *blog) Author() string {

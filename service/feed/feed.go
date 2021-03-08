@@ -78,7 +78,8 @@ func (err ErrParseFeed) HttpStatusCode() int {
 
 //Details represents feed details extracted from given URL.
 type Details struct {
-	URL         string `json:"url"`
+	FeedURL     string `json:"feedUrl"`
+	Website     string `json:"website"`
 	Title       string `json:"title"`
 	Author      string `json:"author"`
 	Description string `json:"description"`
@@ -117,7 +118,8 @@ func (srvc service) Details(ctx context.Context, url string) (*Details, ctxerr.E
 		author = feed.Author.Name
 	}
 	return &Details{
-		URL:         url,
+		FeedURL:     url,
+		Website:     feed.Link,
 		Title:       feed.Title,
 		Author:      author,
 		Description: feed.Description,

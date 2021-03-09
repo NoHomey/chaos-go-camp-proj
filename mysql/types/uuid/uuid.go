@@ -20,8 +20,7 @@ func Wrap(id impl.UUID) UUID {
 
 //Value implements the driver.Valuer interface.
 func (id UUID) Value() (driver.Value, error) {
-	b := [16]byte(id.UUID)
-	return b[:], nil
+	return id.UUID[:], nil
 }
 
 //Scan implements the sql.Scanner interface.

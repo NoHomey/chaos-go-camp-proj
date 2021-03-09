@@ -1,5 +1,7 @@
 package level
 
+import "encoding/json"
+
 const (
 	//OrdBeginner is the order number for the beginner level.
 	OrdBeginner ord = iota
@@ -39,6 +41,11 @@ func FromNum(val uint8) Level {
 //Ord returns the order number.
 func (level Level) Ord() uint8 {
 	return uint8(level.ordNum)
+}
+
+//MarshalJSON implements json.Marshaler
+func (level Level) MarshalJSON() ([]byte, error) {
+	return json.Marshal(level.ordNum)
 }
 
 type ord uint8

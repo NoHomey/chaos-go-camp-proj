@@ -6,6 +6,8 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
+	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/level"
+	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/rating"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/repo"
 	"github.com/NoHomey/chaos-go-camp-proj/service/tmvalerrs"
@@ -18,20 +20,20 @@ import (
 
 //Blog is the expoxed blog data.
 type Blog struct {
-	ID            string     `json:"id"`
-	FeedURL       string     `json:"feedURL"`
-	Author        string     `json:"author"`
-	Title         string     `json:"title"`
-	Description   string     `json:"descrition,omitempty"`
-	Rating        uint8      `json:"rating"`
-	Level         uint8      `json:"level"`
-	Tags          []string   `json:"tags"`
-	QuickNote     QuickNote  `json:"quickNote"`
-	SavedAt       time.Time  `json:"savedAt"`
-	StartedAt     *time.Time `json:"startedAt,omitempty"`
-	FinishedAt    *time.Time `json:"finishedAt,omitempty"`
-	LastSyncedAt  *time.Time `json:"lastSyncedAt,omitempty"`
-	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+	ID            string        `json:"id"`
+	FeedURL       string        `json:"feedURL"`
+	Author        string        `json:"author"`
+	Title         string        `json:"title"`
+	Description   string        `json:"descrition,omitempty"`
+	Rating        rating.Rating `json:"rating"`
+	Level         level.Level   `json:"level"`
+	Tags          []string      `json:"tags"`
+	QuickNote     QuickNote     `json:"quickNote"`
+	SavedAt       time.Time     `json:"savedAt"`
+	StartedAt     *time.Time    `json:"startedAt,omitempty"`
+	FinishedAt    *time.Time    `json:"finishedAt,omitempty"`
+	LastSyncedAt  *time.Time    `json:"lastSyncedAt,omitempty"`
+	LastUpdatedAt *time.Time    `json:"lastUpdatedAt,omitempty"`
 }
 
 //QuickNote is the expoxed quick note data.
@@ -148,8 +150,8 @@ func toData(m model.Blog) *Blog {
 		Author:      m.Author(),
 		Title:       m.Title(),
 		Description: m.Description(),
-		Rating:      m.Rating().Ord(),
-		Level:       m.Level().Ord(),
+		Rating:      m.Rating(),
+		Level:       m.Level(),
 		Tags:        m.Tags(),
 		QuickNote: QuickNote{
 			Text:   m.QuickNote(),

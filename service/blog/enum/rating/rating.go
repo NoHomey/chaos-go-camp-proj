@@ -1,5 +1,7 @@
 package rating
 
+import "encoding/json"
+
 //Ords are the availible order numbers.
 const (
 	Ord0 ord = iota
@@ -48,6 +50,11 @@ func FromNum(val uint8) Rating {
 //Ord returns the order number.
 func (rating Rating) Ord() uint8 {
 	return uint8(rating.ordNum)
+}
+
+//MarshalJSON implements json.Marshaler
+func (rating Rating) MarshalJSON() ([]byte, error) {
+	return json.Marshal(rating.ordNum)
 }
 
 type ord uint8

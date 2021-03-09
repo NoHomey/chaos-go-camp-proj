@@ -17,8 +17,8 @@ import (
 
 //Repo is an abstraction for the blog repository.
 type Repo interface {
-	Save(ctx context.Context, userID uuid.UUID, data data.Blog) error
-	Fetch(ctx context.Context, userID uuid.UUID, data FetchData) ([]model.Blog, error)
+	Save(ctx context.Context, userID uuid.UUID, data *data.Blog) error
+	Fetch(ctx context.Context, userID uuid.UUID, data *FetchData) ([]model.Blog, error)
 }
 
 //UseCollection returns Repo wich uses the given collection.
@@ -37,7 +37,7 @@ type repo struct {
 	coll *mongo.Collection
 }
 
-func (r repo) Save(ctx context.Context, userID uuid.UUID, data data.Blog) error {
+func (r repo) Save(ctx context.Context, userID uuid.UUID, data *data.Blog) error {
 	_, err := r.coll.InsertOne(ctx, &blog{
 		UserIDHiddenField: userID[:],
 		FeedURLField:      data.FeedURL,
@@ -56,7 +56,7 @@ func (r repo) Save(ctx context.Context, userID uuid.UUID, data data.Blog) error 
 	return err
 }
 
-func (r repo) Fetch(ctx context.Context, userID uuid.UUID, data FetchData) ([]model.Blog, error) {
+func (r repo) Fetch(ctx context.Context, userID uuid.UUID, data *FetchData) ([]model.Blog, error) {
 	cursor, err := r.findPaged(ctx, userID, data)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (r repo) Fetch(ctx context.Context, userID uuid.UUID, data FetchData) ([]mo
 	return decodeLimited(ctx, data.Count, cursor)
 }
 
-func (r repo) findPaged(ctx context.Context, userID uuid.UUID, data FetchData) (*mongo.Cursor, error) {
+func (r repo) findPaged(ctx context.Context, userID uuid.UUID, data *FetchData) (*mongo.Cursor, error) {
 	opts := options.Find()
 	opts.SetSort(bson.D{
 		{Key: "level", Value: 1},

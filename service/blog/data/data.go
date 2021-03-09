@@ -20,6 +20,13 @@ type Blog struct {
 	QuickNote   string   `json:"qickNote"`
 }
 
+//FetchBlogs is data for fetching blogs.
+type FetchBlogs struct {
+	Tags  []string `json:"tags" validate:"tags"`
+	Count uint32   `json:"count" validate:"min=10"`
+	After string   `json:"after" validate:"hexadecimal"`
+}
+
 //RegisterValidators registers field validators
 func RegisterValidators(validate *validator.Validate) {
 	validate.RegisterValidation("rating", func(fl validator.FieldLevel) bool {

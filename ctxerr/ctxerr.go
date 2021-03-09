@@ -16,18 +16,18 @@ type Contexter interface {
 	Context() Context
 }
 
-//InvalData wraps error due to invalid data.
-type InvalData struct {
-	wrapped error
-	fields  []string
-}
-
 //Error represents service error.
 type Error interface {
 	error
 	Unwrap() error
 	Text() string
 	Contexter
+}
+
+//InvalData wraps error due to invalid data.
+type InvalData struct {
+	wrapped error
+	fields  []string
 }
 
 func (e InvalData) Error() string {

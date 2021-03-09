@@ -1,6 +1,7 @@
 package access
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
@@ -33,9 +34,10 @@ func (srvc service) decodeToken(data *decodeData) (*TokenData, ctxerr.Error) {
 		return nil, ctxerr.NewInternal(err)
 	}
 	tokenType, syncToken := jsonToken.Get(tokenTypeKey), jsonToken.Get(syncTokenKey)
-	if tokenType != stringTokenType(data.isRefresh) || syncToken != data.token.Sync || jsonToken.Expiration.Before(time.Now()) {
+	expired := jsonToken.Expiration.Before(time.Now())
+	if tokenType != stringTokenType(data.isRefresh) || syncToken != data.token.Sync || expired {
 		srvc.logger.Error(
-			"Failed to recognize refresh token",
+			"Failed to recognize PASETO token",
 			zap.String("tokenAudience", jsonToken.Audience),
 			zap.String("JTI", jsonToken.Jti),
 			zap.String("Subject", jsonToken.Subject),
@@ -44,7 +46,7 @@ func (srvc service) decodeToken(data *decodeData) (*TokenData, ctxerr.Error) {
 			zap.String("tokenType", tokenType),
 			zap.String("syncToken", syncToken),
 		)
-		return nil, ctxerr.NewNotAuthed(nil)
+		return nil, ctxerr.NewNotAuthed(fmt.Errorf("Invalid PASETO token. Token has expired: %t", expired))
 	}
 	tokenID, err := uuid.Parse(jsonToken.Jti)
 	if err != nil {

@@ -107,20 +107,20 @@ type blog struct {
 	FeedURLField          string             `bson:"feedURL"`
 	AuthorField           string             `bson:"author"`
 	TitleField            string             `bson:"title"`
-	DescriptionField      string             `bson:"descrition"`
+	DescriptionField      string             `bson:"descrition,omitempty"`
 	RatingField           uint8              `bson:"rating"`
 	LevelField            uint8              `bson:"level"`
 	TagsField             []string           `bson:"tags"`
 	QuickNoteObjField     quickNote          `bson:"quickNote"`
-	SavedAtField          time.Time          `bson:"savedAt"`
-	StartedAtOptField     *time.Time         `bson:"startedAt"`
-	FinishedAtOptField    *time.Time         `bson:"finishedAt"`
-	LastSyncedAtOptField  *time.Time         `bson:"lastSyncedAt"`
-	LastUpdatedAtOptField *time.Time         `bson:"lastUpdatedAt"`
+	SavedAtField          time.Time          `bson:"savedAt,omitempty"`
+	StartedAtOptField     *time.Time         `bson:"startedAt,omitempty"`
+	FinishedAtOptField    *time.Time         `bson:"finishedAt,omitempty"`
+	LastSyncedAtOptField  *time.Time         `bson:"lastSyncedAt,omitempty"`
+	LastUpdatedAtOptField *time.Time         `bson:"lastUpdatedAt,omitempty"`
 }
 
 type quickNote struct {
-	TextField   string `bson:"text"`
+	TextField   string `bson:"text,omitempty"`
 	PublicField bool   `bson:"public"`
 }
 

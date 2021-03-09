@@ -12,7 +12,6 @@ import (
 type Blog interface {
 	ID() primitive.ObjectID
 	FeedURL() string
-	Website() string
 	Author() string
 	Title() string
 	Description() string

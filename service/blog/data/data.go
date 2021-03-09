@@ -11,7 +11,6 @@ import (
 //Blog is the blog data.
 type Blog struct {
 	FeedURL     string   `json:"feedURL" validate:"url"`
-	Website     string   `json:"website" validate:"url"`
 	Author      string   `json:"author" valiadate:"required"`
 	Title       string   `json:"title"`
 	Description string   `json:"description"`

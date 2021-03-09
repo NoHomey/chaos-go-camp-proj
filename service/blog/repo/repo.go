@@ -105,7 +105,6 @@ type blog struct {
 	IDField               primitive.ObjectID `bson:"_id,omitempty"`
 	UserIDHiddenField     []byte             `bson:"userID"`
 	FeedURLField          string             `bson:"feedURL"`
-	WebsiteField          string             `bson:"website"`
 	AuthorField           string             `bson:"author"`
 	TitleField            string             `bson:"title"`
 	DescriptionField      string             `bson:"descrition"`
@@ -131,10 +130,6 @@ func (b *blog) ID() primitive.ObjectID {
 
 func (b *blog) FeedURL() string {
 	return b.FeedURLField
-}
-
-func (b *blog) Website() string {
-	return b.WebsiteField
 }
 
 func (b *blog) Author() string {

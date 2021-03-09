@@ -1,11 +1,13 @@
 package base64url
 
-import base64 "encoding/base64"
+import (
+	base64 "encoding/base64"
+)
 
 //URLTest tests if the given string is in base64 encoding.
 func Test(s string) bool {
 	for _, c := range s {
-		if !(isInRange(c, 'A', 'Z') || isInRange(c, 'a', 'z') || c == '-' || c == '_') {
+		if !(isInRange(c, 'A', 'Z') || isInRange(c, 'a', 'z') || isInRange(c, '0', '9') || c == '-' || c == '_') {
 			return false
 		}
 	}

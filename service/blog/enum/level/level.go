@@ -1,6 +1,6 @@
 package level
 
-import "encoding/json"
+import "github.com/segmentio/encoding/json"
 
 const (
 	//OrdBeginner is the order number for the beginner level.

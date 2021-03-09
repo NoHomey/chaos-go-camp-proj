@@ -1,6 +1,6 @@
 package rating
 
-import "encoding/json"
+import "github.com/segmentio/encoding/json"
 
 //Ords are the availible order numbers.
 const (

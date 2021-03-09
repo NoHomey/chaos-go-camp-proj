@@ -6,6 +6,7 @@ import (
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/level"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/rating"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //Blog is the blog data.
@@ -24,7 +25,7 @@ type Blog struct {
 type FetchBlogs struct {
 	Tags  []string `json:"tags" validate:"tags"`
 	Count uint32   `json:"count" validate:"min=10"`
-	After string   `json:"after" validate:"hexadecimal"`
+	After string   `json:"after" validate:"optObjectID"`
 }
 
 //RegisterValidators registers field validators
@@ -43,6 +44,14 @@ func RegisterValidators(validate *validator.Validate) {
 			}
 		}
 		return true
+	})
+	validate.RegisterValidation("optObjectID", func(fl validator.FieldLevel) bool {
+		val := fl.Field().String()
+		if len(val) == 0 {
+			return true
+		}
+		_, err := primitive.ObjectIDFromHex(val)
+		return err == nil
 	})
 }
 

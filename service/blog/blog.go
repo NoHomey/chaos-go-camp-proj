@@ -2,6 +2,7 @@ package blog
 
 import (
 	"context"
+	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
@@ -15,10 +16,34 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+//Blog is the expoxed blog data.
+type Blog struct {
+	ID            string     `json:"id"`
+	FeedURL       string     `json:"feedURL"`
+	Author        string     `json:"author"`
+	Title         string     `json:"title"`
+	Description   string     `json:"descrition,omitempty"`
+	Rating        uint8      `json:"rating"`
+	Level         uint8      `json:"level"`
+	Tags          []string   `json:"tags"`
+	QuickNote     QuickNote  `json:"quickNote"`
+	SavedAt       time.Time  `json:"savedAt"`
+	StartedAt     *time.Time `json:"startedAt,omitempty"`
+	FinishedAt    *time.Time `json:"finishedAt,omitempty"`
+	LastSyncedAt  *time.Time `json:"lastSyncedAt,omitempty"`
+	LastUpdatedAt *time.Time `json:"lastUpdatedAt,omitempty"`
+}
+
+//QuickNote is the expoxed quick note data.
+type QuickNote struct {
+	Text   string `json:"text,omitempty"`
+	Public bool   `json:"public"`
+}
+
 //Service is an abstraction for the Blog service.
 type Service interface {
 	Save(ctx context.Context, userID uuid.UUID, data *data.Blog) ctxerr.Error
-	Fetch(ctx context.Context, userID uuid.UUID, data *data.FetchBlogs) ([]model.Blog, ctxerr.Error)
+	Fetch(ctx context.Context, userID uuid.UUID, data *data.FetchBlogs) ([]*Blog, ctxerr.Error)
 }
 
 //Use returns a Service instance wich uses the given arguments.
@@ -60,7 +85,7 @@ func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog
 	return nil
 }
 
-func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.FetchBlogs) ([]model.Blog, ctxerr.Error) {
+func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.FetchBlogs) ([]*Blog, ctxerr.Error) {
 	err := srvc.validate.Struct(data)
 	if err != nil {
 		return nil, tmvalerrs.LogAndReturnCtxErr(&tmvalerrs.Ctx{
@@ -105,5 +130,35 @@ func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.Fet
 		zap.String("userID", userID.String()),
 		zap.Int("blogsLen", len(blogs)),
 	)
-	return blogs, nil
+	return transform(blogs), nil
+}
+
+func transform(data []model.Blog) []*Blog {
+	res := make([]*Blog, len(data))
+	for i := range data {
+		res[i] = toData(data[i])
+	}
+	return res
+}
+
+func toData(m model.Blog) *Blog {
+	return &Blog{
+		ID:          m.ID().Hex(),
+		FeedURL:     m.FeedURL(),
+		Author:      m.Author(),
+		Title:       m.Title(),
+		Description: m.Description(),
+		Rating:      m.Rating().Ord(),
+		Level:       m.Level().Ord(),
+		Tags:        m.Tags(),
+		QuickNote: QuickNote{
+			Text:   m.QuickNote(),
+			Public: m.IsQickNotePublic(),
+		},
+		SavedAt:       m.SavedAt(),
+		StartedAt:     m.StartedAt(),
+		FinishedAt:    m.FinishedAt(),
+		LastSyncedAt:  m.LastSyncedAt(),
+		LastUpdatedAt: m.LastUpdatedAt(),
+	}
 }

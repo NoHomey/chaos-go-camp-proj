@@ -5,6 +5,7 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/env"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/fxmod/app"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/fxmod/blog"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/fxmod/feed"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/fxmod/user"
 	"go.uber.org/fx"
@@ -19,6 +20,7 @@ func main() {
 		app.Module,
 		user.Module,
 		feed.Module,
+		blog.Module,
 	))
 	fxApp.Run()
 }

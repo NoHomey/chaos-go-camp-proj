@@ -4,14 +4,15 @@ import (
 	"context"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
-	"github.com/NoHomey/chaos-go-camp-proj/misc/validator/valerrs"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/repo"
+	"github.com/NoHomey/chaos-go-camp-proj/service/tmvalerrs"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 //Service is an abstraction for the Blog service.
@@ -34,14 +35,14 @@ type service struct {
 func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog) ctxerr.Error {
 	err := srvc.validate.Struct(data)
 	if err != nil {
-		fields := valerrs.Fields(err.(validator.ValidationErrors))
-		srvc.logger.Error(
-			"Invalid blog save data",
-			zap.String("userID", userID.String()),
-			zap.Strings("invalid", fields),
-			zap.Error(err),
-		)
-		return ctxerr.NewInvalData(err, fields)
+		return tmvalerrs.LogAndReturnCtxErr(&tmvalerrs.Ctx{
+			Err:    err.(validator.ValidationErrors),
+			Logger: srvc.logger,
+			Msg:    "Invalid blog save data",
+			Log: []zapcore.Field{
+				zap.String("userID", userID.String()),
+			},
+		})
 	}
 	err = srvc.blogRepo.Save(ctx, userID, data)
 	if err != nil {
@@ -62,14 +63,14 @@ func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog
 func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.FetchBlogs) ([]model.Blog, ctxerr.Error) {
 	err := srvc.validate.Struct(data)
 	if err != nil {
-		fields := valerrs.Fields(err.(validator.ValidationErrors))
-		srvc.logger.Error(
-			"Invalid blog fetch data",
-			zap.String("userID", userID.String()),
-			zap.Strings("invalid", fields),
-			zap.Error(err),
-		)
-		return nil, ctxerr.NewInvalData(err, fields)
+		return nil, tmvalerrs.LogAndReturnCtxErr(&tmvalerrs.Ctx{
+			Err:    err.(validator.ValidationErrors),
+			Logger: srvc.logger,
+			Msg:    "Invalid blog fetch data",
+			Log: []zapcore.Field{
+				zap.String("userID", userID.String()),
+			},
+		})
 	}
 	var after *primitive.ObjectID
 	if len(data.After) > 0 {
@@ -80,7 +81,7 @@ func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.Fet
 				zap.String("userID", userID.String()),
 				zap.String("after", data.After),
 			)
-			return nil, ctxerr.NewInvalData(err, []string{"after"})
+			return nil, ctxerr.NewInvalData(err, map[string]string{"after": "objectID"})
 		}
 	}
 	blogs, err := srvc.blogRepo.Fetch(ctx, userID, &repo.FetchData{

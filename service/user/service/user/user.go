@@ -5,13 +5,14 @@ import (
 	"fmt"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
-	"github.com/NoHomey/chaos-go-camp-proj/misc/validator/valerrs"
 	"github.com/NoHomey/chaos-go-camp-proj/mysql/errors"
+	"github.com/NoHomey/chaos-go-camp-proj/service/tmvalerrs"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/data"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/model"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/repo"
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -97,15 +98,15 @@ type service struct {
 func (srvc service) Register(ctx context.Context, user data.User) ctxerr.Error {
 	err := srvc.validate.Struct(user)
 	if err != nil {
-		fields := valerrs.Fields(err.(validator.ValidationErrors))
-		srvc.logger.Error(
-			"Invalid registration data",
-			zap.String("name", user.Name),
-			zap.String("email", user.Email),
-			zap.Strings("invalid", fields),
-			zap.Error(err),
-		)
-		return ctxerr.NewInvalData(err, fields)
+		return tmvalerrs.LogAndReturnCtxErr(&tmvalerrs.Ctx{
+			Err:    err.(validator.ValidationErrors),
+			Logger: srvc.logger,
+			Msg:    "Invalid registration data",
+			Log: []zapcore.Field{
+				zap.String("name", user.Name),
+				zap.String("email", user.Email),
+			},
+		})
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -147,14 +148,14 @@ func (srvc service) Register(ctx context.Context, user data.User) ctxerr.Error {
 func (srvc service) Authenticate(ctx context.Context, data data.Auth) (model.User, ctxerr.Error) {
 	err := srvc.validate.Struct(data)
 	if err != nil {
-		fields := valerrs.Fields(err.(validator.ValidationErrors))
-		srvc.logger.Error(
-			"Invalid authentication data",
-			zap.String("email", data.Email),
-			zap.Strings("invalid", fields),
-			zap.Error(err),
-		)
-		return nil, ctxerr.NewInvalData(err, fields)
+		return nil, tmvalerrs.LogAndReturnCtxErr(&tmvalerrs.Ctx{
+			Err:    err.(validator.ValidationErrors),
+			Logger: srvc.logger,
+			Msg:    "Invalid authentication data",
+			Log: []zapcore.Field{
+				zap.String("email", data.Email),
+			},
+		})
 	}
 
 	user, err := srvc.repo.FindByEmail(ctx, data.Email)

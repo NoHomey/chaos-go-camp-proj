@@ -27,12 +27,12 @@ type Error interface {
 //InvalData wraps error due to invalid data.
 type InvalData struct {
 	wrapped error
-	fields  []string
+	invalid map[string]string
 }
 
 func (e InvalData) Error() string {
 	msg := "Recived invalid data for fields: %v. Error: %s"
-	return fmt.Sprintf(msg, e.fields, e.wrapped.Error())
+	return fmt.Sprintf(msg, e.invalid, e.wrapped.Error())
 }
 
 func (e InvalData) Unwrap() error {
@@ -42,13 +42,18 @@ func (e InvalData) Unwrap() error {
 //Text returns human readable error text.
 func (e InvalData) Text() string {
 	var sb strings.Builder
-	sb.WriteString("Recived invalid data for ")
-	fields := e.fields
-	sb.WriteString(fields[0])
-	fields = fields[1:]
-	for i := range fields {
-		sb.WriteString(" and ")
-		sb.WriteString(fields[i])
+	sb.WriteString("Recived invalid data: ")
+	last := len(e.invalid) - 1
+	i := 0
+	for field, failed := range e.invalid {
+		sb.WriteString(field)
+		sb.WriteString(" > ")
+		sb.WriteString(failed)
+		if i != last {
+			sb.WriteByte(',')
+			sb.WriteByte(' ')
+		}
+		i++
 	}
 	return sb.String()
 }
@@ -57,13 +62,13 @@ func (e InvalData) Text() string {
 func (e InvalData) Context() Context {
 	return Context{
 		Name: "invalid-data",
-		Data: e.fields,
+		Data: e.invalid,
 	}
 }
 
 //NewInvalData constructs InvalData error.
-func NewInvalData(err error, fields []string) Error {
-	return InvalData{err, fields}
+func NewInvalData(err error, invalid map[string]string) Error {
+	return InvalData{err, invalid}
 }
 
 //NotAuthed wraps error due to Authentication.

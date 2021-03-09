@@ -7,6 +7,7 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/cookie"
+	"github.com/NoHomey/chaos-go-camp-proj/expose/middleware/auth"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/reqlogger"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/sendresult"
 	"github.com/NoHomey/chaos-go-camp-proj/service/user/data"
@@ -38,18 +39,18 @@ func (h Handler) SignUp(ctx *fiber.Ctx) error {
 
 //SignIn signs user in.
 func (h Handler) SignIn(ctx *fiber.Ctx) error {
-	auth := new(data.Auth)
-	if err := ctx.BodyParser(auth); err != nil {
+	authData := new(data.Auth)
+	if err := ctx.BodyParser(authData); err != nil {
 		return ctxerr.NewBadFormat(err)
 	}
 	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 3*time.Second)
 	defer cancel()
-	user, token, err := h.Service.SignIn(srvcCtx, *auth)
+	user, token, err := h.Service.SignIn(srvcCtx, *authData)
 	if err != nil {
 		return err
 	}
 	cookie.Set(ctx, refreshSyncTokenKey, token.Refresh.Sync)
-	cookie.Set(ctx, accessTokenKey, token.Access.Token)
+	cookie.Set(ctx, auth.AccessTokenKey, token.Access.Token)
 	return sendresult.SendAndLog(ctx, fiber.StatusOK, accessRes{
 		Name:            user.Name(),
 		Email:           user.Email(),
@@ -85,7 +86,7 @@ func (h Handler) ObtainAccess(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	cookie.Set(ctx, accessTokenKey, accessToken.Token)
+	cookie.Set(ctx, auth.AccessTokenKey, accessToken.Token)
 	return sendresult.SendAndLog(ctx, fiber.StatusOK, accessRes{
 		Name:            access.UserName(),
 		Email:           access.UserEmail(),
@@ -141,10 +142,7 @@ type accessRes struct {
 	AccessSyncToken string `json:"accessSyncToken"`
 }
 
-const (
-	refreshSyncTokenKey = "refresh-sync-token"
-	accessTokenKey      = "access-token"
-)
+const refreshSyncTokenKey = "refresh-sync-token"
 
 const (
 	authHeaderScheme = "PASETO"

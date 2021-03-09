@@ -17,12 +17,19 @@ import (
 //Repo is an abstraction for the blog repository.
 type Repo interface {
 	Save(ctx context.Context, data data.Blog) error
-	Fetch(ctx context.Context, count uint32, after *primitive.ObjectID) ([]model.Blog, error)
+	Fetch(ctx context.Context, data FetchData) ([]model.Blog, error)
 }
 
 //UseCollection returns Repo wich uses the given collection.
 func UseCollection(coll *mongo.Collection) Repo {
 	return repo{coll}
+}
+
+//FetchData represents data for fetching.
+type FetchData struct {
+	Tags  []string
+	Count uint32
+	After *primitive.ObjectID
 }
 
 type repo struct {
@@ -47,25 +54,25 @@ func (r repo) Save(ctx context.Context, data data.Blog) error {
 	return err
 }
 
-func (r repo) Fetch(ctx context.Context, count uint32, after *primitive.ObjectID) ([]model.Blog, error) {
-	cursor, err := r.findPaged(ctx, count, after)
+func (r repo) Fetch(ctx context.Context, data FetchData) ([]model.Blog, error) {
+	cursor, err := r.findPaged(ctx, data)
 	if err != nil {
 		return nil, err
 	}
 	defer cursor.Close(ctx)
-	return decodeLimited(ctx, count, cursor)
+	return decodeLimited(ctx, data.Count, cursor)
 }
 
-func (r repo) findPaged(ctx context.Context, count uint32, after *primitive.ObjectID) (*mongo.Cursor, error) {
+func (r repo) findPaged(ctx context.Context, data FetchData) (*mongo.Cursor, error) {
 	opts := options.Find()
 	opts.SetSort(bson.D{
 		{Key: "level", Value: 1},
 		{Key: "rating", Value: -1},
 		{Key: "_id", Value: 1}})
-	opts.SetLimit(int64(count))
-	filter := bson.M{}
-	if after != nil {
-		filter["_id"] = bson.E{Key: "$gt", Value: after}
+	opts.SetLimit(int64(data.Count))
+	filter := bson.M{"tags": bson.M{"$all": data.Tags}}
+	if data.After != nil {
+		filter["_id"] = bson.E{Key: "$gt", Value: data.After}
 	}
 	return r.coll.Find(ctx, filter, opts)
 }

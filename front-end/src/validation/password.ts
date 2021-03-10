@@ -1,9 +1,13 @@
-import { Result, valid, invalid } from "./Result";
+import { Result, valid, invalid } from "./Result"
 import min from "./result/minLength"
 import max from "./result/maxLength"
+import required from "./result/required"
 
 export default function Validate(str: string): Result {
     const l = str.length
+    if(l === 0){
+        return required()
+    }
     if(l < minLength) {
         return min("Password", minLength)
     }

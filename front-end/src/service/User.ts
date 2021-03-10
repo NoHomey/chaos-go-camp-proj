@@ -38,18 +38,7 @@ class Impl implements Service {
         if(!this.refreshToken) {
             return null
         }
-        return Consume<User>(
-            fetch(
-                url.access,
-                {
-                    cache: "no-cache",
-                    headers: {
-                        "Authorization": `PASETO ${this.refreshToken}`
-                    }
-                }
-            ),
-            this.consume.bind(this)
-        )
+        return this.Access()
     }
 
     public SignUp(data: SignUpData): Response<void> {
@@ -101,7 +90,7 @@ class Impl implements Service {
                     method: "POST",
                     cache: "no-cache",
                     headers: {
-                        "Authorization": `PASETO ${this.refreshToken}`
+                        "Authorization": this.authHeader()
                     }
                 }
             ),
@@ -119,7 +108,7 @@ class Impl implements Service {
                 {
                     cache: "no-cache",
                     headers: {
-                        "Authorization": `PASETO ${this.refreshToken}`
+                        "Authorization": this.authHeader()
                     }
                 }
             ),
@@ -133,6 +122,10 @@ class Impl implements Service {
             name: res.name!,
             email: res.email!
         }
+    }
+
+    private authHeader(): string {
+        return `PASETO ${this.refreshToken}`
     }
 }
 

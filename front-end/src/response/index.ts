@@ -33,7 +33,7 @@ export class Wrapper<T> implements Response<T> {
     }
 
     public OnResult(cb: CallBack<T>): Response<T> {
-        this.onResult = (res: any) => cb(this.consume(res))
+        this.onResult = cb
         return this
     }
 

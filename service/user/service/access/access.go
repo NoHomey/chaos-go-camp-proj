@@ -121,7 +121,7 @@ func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, c
 		return nil, ctxerr.NewInternal(cerr)
 	}
 	srvc.logger.Info(
-		"Grating access",
+		"Granting access",
 		zap.String("userID", user.ID().String()),
 		zap.String("refreshTokenID", refreshID.String()),
 		zap.Time("accessGratedAt", now),

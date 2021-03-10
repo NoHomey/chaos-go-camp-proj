@@ -30,10 +30,23 @@ func (srvc service) decodeToken(data *decodeData) (*TokenData, ctxerr.Error) {
 		srvc.logger.Error(
 			"Failed to Decrypt refresh token",
 			zap.String("token", data.token.Token),
+			zap.Error(err),
 		)
 		return nil, ctxerr.NewInternal(err)
 	}
-	tokenType, syncToken := jsonToken.Get(tokenTypeKey), jsonToken.Get(syncTokenKey)
+	sync := jsonToken.Get(syncTokenKey)
+	flipped, err := base64url.Decode(sync)
+	if err != nil {
+		srvc.logger.Error(
+			"Failed to Decode sync token",
+			zap.String("syncToken", data.token.Sync),
+			zap.Error(err),
+		)
+		return nil, ctxerr.NewInternal(err)
+	}
+	flip(flipped)
+	syncToken := base64url.Encode(flipped)
+	tokenType := jsonToken.Get(tokenTypeKey)
 	expired := jsonToken.Expiration.Before(time.Now())
 	if tokenType != stringTokenType(data.isRefresh) || syncToken != data.token.Sync || expired {
 		srvc.logger.Error(

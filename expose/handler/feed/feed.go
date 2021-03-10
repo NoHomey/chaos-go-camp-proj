@@ -24,10 +24,11 @@ type Handler struct {
 //Details returns details for a feed url.
 func (h Handler) Details(ctx *fiber.Ctx) error {
 	encodedURL := ctx.Params("encurl")
-	url, err := base64url.DecodeString(encodedURL)
+	bs, err := base64url.Decode(encodedURL)
 	if err != nil {
 		return ctxerr.NewBadFormat(err)
 	}
+	url := string(bs)
 	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 5*time.Second)
 	defer cancel()
 	details, cerr := h.Service.Details(srvcCtx, url)

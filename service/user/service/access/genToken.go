@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
+	"github.com/NoHomey/chaos-go-camp-proj/misc/base64url"
 	"github.com/NoHomey/chaos-go-camp-proj/secrand"
 	"github.com/google/uuid"
 	"github.com/o1egl/paseto"
@@ -21,7 +22,7 @@ type tokenGenData struct {
 
 func (srvc service) genSyncToken(data *tokenGenData) (SyncToken, time.Time, ctxerr.Error) {
 	now := time.Now()
-	sync, err := secrand.RandString(syncTokenCount)
+	secrandbs, err := secrand.RandBytes(syncTokenCount)
 	if err != nil {
 		srvc.logger.Error(
 			"Failed to generate secure random string",
@@ -31,7 +32,8 @@ func (srvc service) genSyncToken(data *tokenGenData) (SyncToken, time.Time, ctxe
 	}
 	jsonToken := initToken(data, now)
 	jsonToken.Set(tokenTypeKey, stringTokenType(data.forRefresh))
-	jsonToken.Set(syncTokenKey, sync)
+	flip(secrandbs)
+	jsonToken.Set(syncTokenKey, base64url.Encode(secrandbs))
 	if data.refreshID != nil {
 		jsonToken.Set("refresh-token", data.refreshID.String())
 	}
@@ -45,7 +47,8 @@ func (srvc service) genSyncToken(data *tokenGenData) (SyncToken, time.Time, ctxe
 		)
 		return SyncToken{}, now, ctxerr.NewInternal(err)
 	}
-	return SyncToken{Token: token, Sync: sync}, now, nil
+	flip(secrandbs)
+	return SyncToken{Token: token, Sync: base64url.Encode(secrandbs)}, now, nil
 }
 
 func stringTokenType(isRefresh bool) string {
@@ -71,5 +74,13 @@ func initToken(data *tokenGenData, now time.Time) paseto.JSONToken {
 		Expiration: now.Add(data.tokenDuration),
 		IssuedAt:   now,
 		NotBefore:  now,
+	}
+}
+
+func flip(b []byte) {
+	l := len(b)
+	if l > 0 {
+		first, last := 0, l-1
+		b[first], b[last] = b[last], b[first]
 	}
 }

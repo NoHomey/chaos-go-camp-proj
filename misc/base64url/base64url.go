@@ -19,13 +19,13 @@ func Encode(b []byte) string {
 	return base64.RawURLEncoding.EncodeToString(b)
 }
 
-//DecodeString decodes given string.
-func DecodeString(s string) (string, error) {
-	d, err := base64.RawURLEncoding.DecodeString(s)
+//Decode decodes given string.
+func Decode(s string) ([]byte, error) {
+	bs, err := base64.RawURLEncoding.DecodeString(s)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return string(d), nil
+	return bs, nil
 }
 
 func isInRange(c, a, b rune) bool {

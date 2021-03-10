@@ -4,16 +4,18 @@ import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Checkbox from "@material-ui/core/Checkbox"
 import Grid from "@material-ui/core/Grid"
 import Link from "@material-ui/core/Link"
+import { Link as RouterLink } from "react-router-dom"
+import routes from "../../routes/map"
 
 const links = (
     <Grid container>
         <Grid item xs>
-            <Link href="#" variant="body2">
+            <Link to="/" variant="body2" component={RouterLink}>
                 Forgot password?
             </Link>
         </Grid>
         <Grid item>
-            <Link href="#" variant="body2">
+            <Link to={routes.signUp} variant="body2" component={RouterLink}>
                 Don"t have an account? Sign up
             </Link>
         </Grid>

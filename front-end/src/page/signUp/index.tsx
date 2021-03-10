@@ -1,9 +1,11 @@
 import Layout from "../../layout/SignPage"
-import InputField from "../../component/InputField";
-import Link from '@material-ui/core/Link';
+import InputField from "../../component/InputField"
+import Link from "@material-ui/core/Link"
+import { Link as RouterLink } from "react-router-dom"
+import routes from "../../routes/map"
 
 const link = (
-    <Link href="#" variant="body2">
+    <Link to={routes.signIn} component={RouterLink} variant="body2">
         Have an account? Sign in
     </Link>
 )
@@ -23,6 +25,11 @@ export default function Page() {
             />
             <InputField
                 label="Password"
+                type="password"
+                required
+            />
+            <InputField
+                label="Confirm password"
                 type="password"
                 required
             />

@@ -23,4 +23,8 @@ export function all(vs: Array<Validator>): boolean {
     return vs.every(v => v().valid)
 }
 
+export function errorMsg(res: Result): undefined | string {
+    return res.valid ? undefined : res.message
+}
+
 export default Result

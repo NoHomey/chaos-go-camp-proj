@@ -71,7 +71,16 @@ func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog
 			},
 		})
 	}
-	err = srvc.blogRepo.Save(ctx, userID, data)
+	err = srvc.blogRepo.Save(ctx, userID, &repo.BlogData{
+		FeedURL:     data.FeedURL,
+		Author:      data.Author,
+		Title:       data.Title,
+		Description: data.Description,
+		Rating:      rating.FromNum(data.Rating),
+		Level:       level.FromNum(data.Level),
+		Tags:        data.Tags,
+		QuickNote:   data.QuickNote,
+	})
 	if err != nil {
 		srvc.logger.Error(
 			"Could not save blog",

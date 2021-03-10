@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/level"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/rating"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
@@ -17,7 +16,7 @@ import (
 
 //Repo is an abstraction for the blog repository.
 type Repo interface {
-	Save(ctx context.Context, userID uuid.UUID, data *data.Blog) error
+	Save(ctx context.Context, userID uuid.UUID, data *BlogData) error
 	Fetch(ctx context.Context, userID uuid.UUID, data *FetchData) ([]model.Blog, error)
 }
 
@@ -33,19 +32,31 @@ type FetchData struct {
 	After *primitive.ObjectID
 }
 
+//BlogData is the data for saving blogs.
+type BlogData struct {
+	FeedURL     string
+	Author      string
+	Title       string
+	Description string
+	Rating      rating.Rating
+	Level       level.Level
+	Tags        []string
+	QuickNote   string
+}
+
 type repo struct {
 	coll *mongo.Collection
 }
 
-func (r repo) Save(ctx context.Context, userID uuid.UUID, data *data.Blog) error {
+func (r repo) Save(ctx context.Context, userID uuid.UUID, data *BlogData) error {
 	_, err := r.coll.InsertOne(ctx, &blog{
 		UserIDHiddenField: userID[:],
 		FeedURLField:      data.FeedURL,
 		AuthorField:       data.Author,
 		TitleField:        data.Title,
 		DescriptionField:  data.Description,
-		RatingField:       data.Rating,
-		LevelField:        data.Level,
+		RatingField:       data.Rating.Ord(),
+		LevelField:        data.Level.Ord(),
 		TagsField:         data.Tags,
 		QuickNoteObjField: quickNote{
 			TextField:   data.QuickNote,

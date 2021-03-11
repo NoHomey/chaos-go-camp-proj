@@ -1,4 +1,4 @@
-import Container from "@material-ui/core/Container"
+/*import Container from "@material-ui/core/Container"
 import Paper from "@material-ui/core/Paper"
 import InputField from "../../component/InputField"
 import Rating from "../../component/Rating"
@@ -79,4 +79,6 @@ const Page: React.FC<{}> = () => {
     )
 }
 
-export default Page
+export default Page*/
+
+export default function Page() { return null }

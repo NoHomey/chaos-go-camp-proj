@@ -1,4 +1,4 @@
-import Layout from "../../layout/SignPage"
+/*import Layout from "../../layout/SignPage"
 import InputField from "../../component/InputField"
 import Link from "@material-ui/core/Link"
 import { Link as RouterLink } from "react-router-dom"
@@ -35,4 +35,6 @@ export default function Page() {
             />
         </Layout>
     )
-} 
+}*/
+
+export default function Page() { return null }

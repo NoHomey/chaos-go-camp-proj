@@ -32,11 +32,11 @@ const ReqDialog: React.FC<{}> = ({ children }) => {
             loading: true,
             onOK: null
         }),
-        showFail: () => setState({
+        showFail: (action?: () => void) => setState({
             show: failText,
             kind: Kind.Warn,
             loading: false,
-            onOK: close
+            onOK: action ?? close
         }),
         showError: (node, onOK) => setState({
             show: node,
@@ -64,7 +64,7 @@ const ReqDialog: React.FC<{}> = ({ children }) => {
                             ml={2}
                             mr={5}
                             component="span"
-                            fontSize="h6.fontSize"
+                            fontSize="body1.fontSize"
                             fontWeight="fontWeightMedium"
                             color="text.secondary">
                             {state.show}
@@ -76,7 +76,7 @@ const ReqDialog: React.FC<{}> = ({ children }) => {
                 {state.onOK !== null &&
                 <DialogActions>
                     <Button color="primary" onClick={state.onOK}>
-                        OK
+                        {state.kind === Kind.Warn && state.onOK !== close ? "Retry" : "OK"}
                     </Button>
                 </DialogActions>}
             </Dialog>

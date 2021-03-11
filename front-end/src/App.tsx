@@ -5,31 +5,38 @@ import Private from "./routes/Private"
 import { useService } from "./context/Service"
 import { useState, State } from "./context/User"
 import { useReqDialog } from "./context/ReqDialog"
+import { Response } from "./response"
+import { User } from "./service/User"
 
 export default function App() {
     const userService = useService("user")
     const dialog = useReqDialog()
     const { state, setUser, setStateToSign } = useState()
+    const load = (resp: Response<User>) => {
+        const access = resp
+            .OnFail(() => {
+                dialog.showFail(() => {
+                    const access = userService.Reload()
+                    dialog.showLoading("Trying again")
+                    setTimeout(() => load(access!), 2000)
+                })
+            })
+            .OnError(err => {
+                setStateToSign()
+                dialog.close()
+            })
+            .OnResult(usr => {
+                setUser(usr)
+                dialog.close()
+            }).Handle()
+    }
     React.useEffect(() => {
         let access = userService.Reload()
         if(access === null) {
             setStateToSign()
         } else {
-            access = access
-                .OnFail(() => {
-                    dialog.showFail()
-                    setStateToSign()
-                })
-                .OnError(err => {
-                    setStateToSign()
-                    dialog.close()
-                })
-                .OnResult(usr => {
-                    setUser(usr)
-                    dialog.close()
-                })
             dialog.showLoading("Getting access")
-            setTimeout(access.Handle.bind(access), 1000)
+            setTimeout(() => load(access!), 1000)
         }
     }, [])
 

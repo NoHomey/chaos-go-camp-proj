@@ -2,7 +2,7 @@ import * as React from "react"
 
 export interface Value {
     showLoading: (text: string) => void
-    showFail: () => void
+    showFail: (action?: () => void) => void
     showError: (node: React.ReactNode, onOK: () => void) => void
     showResult: (node: React.ReactNode, onOK: () => void) => void
     close: () => void

@@ -9,7 +9,7 @@ export default function useSignIn() {
     const dialog = useReqDialog()
     return function(data: SignInData) {
         const res = user.SignIn(data)
-            .OnFail(dialog.showFail)
+            .OnFail(() => dialog.showFail())
             .OnError(err => {
                 const text = JSON.stringify(err, null, 4)
                 dialog.showError(text, dialog.close)
@@ -18,7 +18,7 @@ export default function useSignIn() {
                 setUser(usr)
                 dialog.close()
             })
-        dialog.show("Signing in...")
+        dialog.showLoading("Signing in")
         setTimeout(res.Handle.bind(res), 1500)
     }
 }

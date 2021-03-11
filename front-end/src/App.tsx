@@ -28,14 +28,14 @@ export default function App() {
                     setUser(usr)
                     dialog.close()
                 })
-            dialog.show("Getting access...")
-            setTimeout(access.Handle.bind(access), 1500)
+            dialog.showLoading("Getting access")
+            setTimeout(access.Handle.bind(access), 1000)
         }
     }, [])
 
     const onSignOut = () => {
         const res = userService.SignOut()
-            .OnFail(dialog.showFail)
+            .OnFail(() => dialog.showFail())
             .OnError(err => {
                 dialog.showError("Failed to sign out", dialog.close)
             })
@@ -43,7 +43,7 @@ export default function App() {
                 setUser(null)
                 dialog.close()
             })
-        dialog.show("Signig out...")
+        dialog.showLoading("Signing out")
         setTimeout(res.Handle.bind(res), 1000)
     }
     switch(state) {

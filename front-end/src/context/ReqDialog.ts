@@ -1,7 +1,7 @@
 import * as React from "react"
 
 export interface Value {
-    show: (node: React.ReactNode) => void
+    showLoading: (text: string) => void
     showFail: () => void
     showError: (node: React.ReactNode, onOK: () => void) => void
     showResult: (node: React.ReactNode, onOK: () => void) => void
@@ -9,7 +9,7 @@ export interface Value {
 }
 
 const Ctx = React.createContext<Value>({
-    show: error,
+    showLoading: error,
     showFail: error,
     showError: error,
     showResult: error,

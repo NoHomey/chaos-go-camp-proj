@@ -4,24 +4,52 @@ import Dialog from "@material-ui/core/Dialog"
 import DialogActions from "@material-ui/core/DialogActions"
 import DialogContent from "@material-ui/core/DialogContent"
 import Button from "@material-ui/core/Button"
+import CircularProgress from "@material-ui/core/CircularProgress"
+import Box from "@material-ui/core/Box"
 
 enum Kind { Info, Warn, Err, Succ }
 
 export interface State {
     show: React.ReactNode
     kind: Kind
+    loading: boolean
     onOK: null | (() => void)
 }
 
 const ReqDialog: React.FC<{}> = ({ children }) => {
-    const initial: State = { show: null, kind: Kind.Info, onOK: null }
+    const initial: State = {
+        show: null,
+        kind: Kind.Info,
+        loading: false,
+        onOK: null
+    }
     const [state, setState] = React.useState<State>(initial)
     const close = () => setState(initial)
     const value: Value = {
-        show: node => setState({ show: node, kind: Kind.Info, onOK: null }),
-        showFail: () => setState({ show: failText, kind: Kind.Warn, onOK: close }),
-        showError: (node, onOK) => setState({ show: node, kind: Kind.Err, onOK: onOK }),
-        showResult: (node, onOK) => setState({ show: node, kind: Kind.Succ, onOK: onOK }),
+        showLoading: text  => setState({
+            show: text,
+            kind: Kind.Info,
+            loading: true,
+            onOK: null
+        }),
+        showFail: () => setState({
+            show: failText,
+            kind: Kind.Warn,
+            loading: false,
+            onOK: close
+        }),
+        showError: (node, onOK) => setState({
+            show: node,
+            kind: Kind.Err,
+            loading: false,
+            onOK: onOK
+        }),
+        showResult: (node, onOK) => setState({
+            show: node,
+            kind: Kind.Succ,
+            loading: false,
+            onOK: onOK
+        }),
         close
     }
     
@@ -30,7 +58,20 @@ const ReqDialog: React.FC<{}> = ({ children }) => {
             {children}
             <Dialog open={!!state.show} disableEscapeKeyDown maxWidth="sm" fullWidth>
                 <DialogContent>
-                    {state.show}
+                    {state.loading
+                    ? <Box width={1} component="span">
+                        <Box
+                            ml={2}
+                            mr={5}
+                            component="span"
+                            fontSize="h6.fontSize"
+                            fontWeight="fontWeightMedium"
+                            color="text.secondary">
+                            {state.show}
+                        </Box>
+                        <CircularProgress size={42} thickness={4}/>
+                    </Box>
+                    : state.show}
                 </DialogContent>
                 {state.onOK !== null &&
                 <DialogActions>

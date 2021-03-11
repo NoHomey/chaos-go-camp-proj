@@ -52,7 +52,7 @@ const ReqDialog: React.FC<{}> = ({ children }) => {
         }),
         close
     }
-    
+    const isRetry = state.kind === Kind.Warn && state.onOK !== close
     return (
         <Provider value={value}>
             {children}
@@ -61,22 +61,23 @@ const ReqDialog: React.FC<{}> = ({ children }) => {
                     {state.loading
                     ? <Box width={1} component="span">
                         <Box
-                            ml={2}
                             mr={5}
                             component="span"
-                            fontSize="body1.fontSize"
+                            fontSize="h6.fontSize"
                             fontWeight="fontWeightMedium"
                             color="text.secondary">
                             {state.show}
                         </Box>
                         <CircularProgress size={42} thickness={4}/>
                     </Box>
-                    : state.show}
+                    : <Content kind={state.kind}>
+                        {state.show}
+                    </Content>}
                 </DialogContent>
                 {state.onOK !== null &&
                 <DialogActions>
                     <Button color="primary" onClick={state.onOK}>
-                        {state.kind === Kind.Warn && state.onOK !== close ? "Retry" : "OK"}
+                        {isRetry ? "Retry" : "OK"}
                     </Button>
                 </DialogActions>}
             </Dialog>
@@ -86,4 +87,29 @@ const ReqDialog: React.FC<{}> = ({ children }) => {
 
 export default ReqDialog
 
+const Content: React.FC<{ kind: Kind }> = ({ kind, children }) => {
+    const isText = typeof children === "string"
+    return isText ?
+        (<Box
+            component="span"
+            fontSize="h6.fontSize"
+            fontWeight="fontWeightMedium"
+            color={color(kind)}>
+            {children}
+        </Box>
+        ) : <>{children}</>
+}
+
+function color(kind: Kind): string {
+    switch(kind) {
+    case Kind.Info:
+        return "text.primary"
+    case Kind.Warn:
+        return "warning.main"
+    case Kind.Err:
+        return "error.main"
+    case Kind.Succ:
+        return "success.main"
+    }
+}
 const failText = "Could not make request to the server. Please ensure you have a stable internet connection"

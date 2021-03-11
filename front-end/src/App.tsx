@@ -13,11 +13,11 @@ export default function App() {
     const dialog = useReqDialog()
     const { state, setUser, setStateToSign } = useState()
     const load = (resp: Response<User>) => {
-        const access = resp
+        resp
             .OnFail(() => {
                 dialog.showFail(() => {
-                    const access = userService.Reload()
                     dialog.showLoading("Trying again")
+                    const access = userService.Reload()
                     setTimeout(() => load(access!), 2000)
                 })
             })

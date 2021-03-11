@@ -20,12 +20,14 @@ export interface Props {
     children: JSX.Element[]
     link: React.ReactNode
     actionButtonLabel: string
+    onAction: () => void
 }
 
 const Page: React.FC<Props> = ({
     children,
     link,
-    actionButtonLabel
+    actionButtonLabel,
+    onAction
 }) => {
     const classes = useStyles()
     return (
@@ -38,6 +40,7 @@ const Page: React.FC<Props> = ({
                         variant="contained"
                         color="primary"
                         className={classes.submit}
+                        onClick={onAction}
                     >
                         {actionButtonLabel}
                     </Button>

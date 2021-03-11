@@ -1,28 +1,17 @@
 import Layout from "../../layout/SignPage"
 import InputField from "../../component/InputField"
-import { LabeledCheckbox } from "../../component/LabeledCheckbox"
-import Grid from "@material-ui/core/Grid"
 import Link from "@material-ui/core/Link"
 import { Link as RouterLink } from "react-router-dom"
 import routes from "../../routes/map"
 import email from "../../validation/email"
 import password from "../../validation/password"
-import { every } from "../../validation/Result"
+import { Result, valid, invalid, every } from "../../validation/Result"
 import useForceError from "../../hook/useForceError"
 
-const links = (
-    <Grid container>
-        <Grid item xs>
-            <Link to="/" variant="body2" component={RouterLink}>
-                Forgot password?
-            </Link>
-        </Grid>
-        <Grid item>
-            <Link to={routes.signUp} variant="body2" component={RouterLink}>
-                Don"t have an account? Sign up
-            </Link>
-        </Grid>
-    </Grid>
+const link = (
+    <Link to={routes.signIn} component={RouterLink} variant="body2">
+        Have an account? Sign in
+    </Link>
 )
 
 export interface Props {
@@ -30,12 +19,12 @@ export interface Props {
         data: {
             email: string
             password: string
-            remember: boolean
+            confirmPassword: string
         }
         event: {
             onEmailChange: (value: string) => void
             onPasswordChange: (value: string) => void
-            onRememberChange: () => void
+            onConfirmPasswordChange: (value: string) => void
         }
     }
 }
@@ -44,10 +33,11 @@ const Page: React.FC<Props> = ({model}) => {
     const {data, event} = model
     const emailRes = email(data.email)
     const passwordRes = password(data.password)
-    const valid = every([emailRes, passwordRes])
+    const confirmPasswordRes = match(data.password, data.confirmPassword)
+    const valid = every([emailRes, passwordRes, confirmPasswordRes])
     const [forceError, showValidation] = useForceError(valid)
     return (
-        <Layout actionButtonLabel="Sign in" link={links} onAction={() => {
+        <Layout actionButtonLabel="Sign in" link={link} onAction={() => {
             if(!valid) {
                 showValidation()
             }
@@ -71,12 +61,24 @@ const Page: React.FC<Props> = ({model}) => {
                 forceError={forceError}
                 onValueChange={event.onPasswordChange}
             />
-            <LabeledCheckbox
-                label="Remember me"
-                checked={data.remember}
-                onToggle={event.onRememberChange} />
+            <InputField
+                label="Confirm password"
+                type="password"
+                required
+                value={data.confirmPassword}
+                validation={confirmPasswordRes}
+                forceError={forceError}
+                onValueChange={event.onConfirmPasswordChange}
+            />
         </Layout>
     )
+}
+
+function match(password: string, confirmPassword: string): Result {
+    if(password === confirmPassword) {
+        return valid()
+    }
+    return invalid("Confirm password and Password must match")
 }
 
 export default Page

@@ -12,20 +12,24 @@ type PickProps
 
 type InheritProps = Pick<TextFieldProps, PickProps>
 
+enum ValidationState { Init, Show, Hide }
+
 export interface Props extends InheritProps {
     validation: Result
+    forceError: boolean
     onValueChange: (val: string) => void
 }
 
 const waitTime = 700
 
 export const InputField: React.FC<Props> = props => {
-    const { validation, onValueChange, ...rest } = props
-    const [showValidation, setShowValidation] = React.useState(false)
+    const { validation, onValueChange, forceError, ...rest } = props
+    const [showValidation, setShowValidation] = React.useState(ValidationState.Init)
     const debounceValidation = React.useCallback(
-        debounce(() => setShowValidation(true), waitTime),
+        debounce(() => setShowValidation(ValidationState.Show), waitTime),
         []
     )
+    const showError = forceError && (showValidation !== ValidationState.Hide)
     return (
         <TextField
             {...rest}
@@ -33,17 +37,18 @@ export const InputField: React.FC<Props> = props => {
             margin="normal"
             fullWidth
             onChange={e => {
-                setShowValidation(false)
+                setShowValidation(ValidationState.Hide)
                 onValueChange(e.target.value)
                 debounceValidation()
             }}
-            error={showValidation && !validation.valid}
-            helperText={showValidation && errorMsg(validation)} />
+            onFocus={() => setShowValidation(ValidationState.Hide)}
+            error={showError && !validation.valid}
+            helperText={showError && errorMsg(validation)} />
     )
 }
 
 export const MemoInput = React.memo(InputField, (prev, next) => {
-    return next.value === prev.value
+    return next.value === prev.value && prev.forceError === next.forceError
 })
 
 export default MemoInput

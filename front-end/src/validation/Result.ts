@@ -17,10 +17,8 @@ export function valid(): Result {
     }
 }
 
-export type Validator = () => Result
-
-export function all(vs: Array<Validator>): boolean {
-    return vs.every(v => v().valid)
+export function every(results: Array<Result>): boolean {
+    return results.every(res => res.valid)
 }
 
 export function errorMsg(res: Result): undefined | string {

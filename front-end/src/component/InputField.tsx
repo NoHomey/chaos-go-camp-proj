@@ -29,7 +29,10 @@ export const InputField: React.FC<Props> = props => {
         debounce(() => setShowValidation(ValidationState.Show), waitTime),
         []
     )
-    const showError = showValidation === ValidationState.Show || forceError && (showValidation !== ValidationState.Hide)
+    const showError =
+        showValidation === ValidationState.Show
+        ||
+        (forceError && (showValidation !== ValidationState.Hide))
     return (
         <TextField
             {...rest}

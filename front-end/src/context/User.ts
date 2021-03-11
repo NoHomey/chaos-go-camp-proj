@@ -1,9 +1,13 @@
 import * as React from "react"
 import { User } from "../service/User"
 
+export enum State { Init, Sign, User }
+
 export interface Value {
-    user: User
-    setUser: (user: User) => void
+    user: null | User
+    state: State
+    setUser: (user: null | User) => void
+    setStateToSign: () => void
 }
 
 const Ctx = React.createContext<Value>({
@@ -11,7 +15,9 @@ const Ctx = React.createContext<Value>({
         name: "",
         email: "",
     },
-    setUser: () => { throw(new Error("User Context with invalid value")) }
+    state: State.Init,
+    setUser: error,
+    setStateToSign: error
 })
 
 export const Provider = Ctx.Provider
@@ -26,4 +32,17 @@ export function useUser() {
     return ctx.user
 }
 
+export function useState() {
+    const ctx = React.useContext(Ctx)
+    return {
+        state: ctx.state,
+        setUser: ctx.setUser,
+        setStateToSign: ctx.setStateToSign
+    }
+}
+
 export default Provider
+
+function error() {
+    throw(new Error("User Context with invalid value"))
+}

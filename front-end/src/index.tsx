@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import Bootstrap from './Bootstrap';
 import reportWebVitals from './reportWebVitals';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<Bootstrap />, document.getElementById('root'));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

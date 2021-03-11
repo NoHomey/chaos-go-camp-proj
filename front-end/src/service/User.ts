@@ -103,6 +103,7 @@ class Impl implements Service {
             () => {
                 this.refreshToken = null
                 this.accessSyncToken = null
+                localStorage.removeItem(refreshTokenKey)
             }
         )
     }

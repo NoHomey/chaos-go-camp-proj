@@ -1,12 +1,44 @@
 import * as React from "react"
-import { Provider } from "../context/User"
+import { Provider, State as UserState } from "../context/User"
 import { User } from "../service/User"
 
-export default function UserProvider({ children }: { children: React.ReactNode }) {
-    const [user, setUser] = React.useState<User>({ name: "", email: "" })
+interface State {
+    user: null | User
+    state: UserState
+}
+
+const UserProvider: React.FC<{}> = ({ children }) => {
+    const [state, setState] = React.useState<State>({
+        user: null,
+        state: UserState.Init
+    })
     return (
-        <Provider value={{ user, setUser }}>
+        <Provider value={{
+            user: state.user,
+            state: state.state,
+            setUser: usr => {
+                if(usr === null) {
+                    setState({
+                        user: null,
+                        state: UserState.Sign
+                    })
+                } else {
+                    setState({
+                        user: usr,
+                        state: UserState.User
+                    })
+                }
+            },
+            setStateToSign: () => {
+                setState({
+                    user: state.user,
+                    state: UserState.Sign
+                })
+            }
+        }}>
             {children}
         </Provider>
     )
 }
+
+export default UserProvider

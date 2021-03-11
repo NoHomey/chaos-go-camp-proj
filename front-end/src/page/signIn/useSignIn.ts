@@ -16,11 +16,9 @@ export default function useSignIn() {
             })
             .OnResult(usr => {
                 setUser(usr)
-                dialog.showResult(`Hello ${usr.name}`, () => {
-                    dialog.close()
-                })
+                dialog.close()
             })
         dialog.show("Signing in...")
-        setTimeout(res.Handle, 1500)
+        setTimeout(res.Handle.bind(res), 1500)
     }
 }

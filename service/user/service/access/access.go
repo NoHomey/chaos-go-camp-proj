@@ -190,6 +190,7 @@ func (srvc service) RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.
 			zap.String("userID", data.UserID.String()),
 			zap.String("accessID", data.AccessID.String()),
 			zap.Time("createdAt", data.Since),
+			zap.Error(err),
 		)
 		return ctxerr.NewInternal(err)
 	}

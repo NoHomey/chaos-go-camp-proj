@@ -13,7 +13,7 @@ export interface State {
     onOK: null | (() => void)
 }
 
-export default function ReqDialog({ children }: { children: React.ReactNode }) {
+const ReqDialog: React.FC<{}> = ({ children }) => {
     const initial: State = { show: null, kind: Kind.Info, onOK: null }
     const [state, setState] = React.useState<State>(initial)
     const close = () => setState(initial)
@@ -28,18 +28,21 @@ export default function ReqDialog({ children }: { children: React.ReactNode }) {
     return (
         <Provider value={value}>
             {children}
-            <Dialog open={!!state.show} disableEscapeKeyDown maxWidth="md" fullWidth>
+            <Dialog open={!!state.show} disableEscapeKeyDown maxWidth="sm" fullWidth>
                 <DialogContent>
                     {state.show}
                 </DialogContent>
+                {state.onOK !== null &&
                 <DialogActions>
-                    <Button color="primary" onClick={state.onOK ?? undefined}>
+                    <Button color="primary" onClick={state.onOK}>
                         OK
                     </Button>
-                </DialogActions>
+                </DialogActions>}
             </Dialog>
         </Provider>
     )
 }
+
+export default ReqDialog
 
 const failText = "Could not make request to the server. Please ensure you have a stable internet connection"

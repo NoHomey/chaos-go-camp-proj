@@ -5,10 +5,12 @@ const service: Service = {
     user: new User()
 }
 
-export default function ServiceProvider({ children }: { children: React.ReactNode }) {
+const ServiceProvider: React.FC<{}> = ({ children }) => {
     return (
         <Provider value={service}>
             {children}
         </Provider>
     )
 }
+
+export default ServiceProvider

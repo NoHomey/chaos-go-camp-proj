@@ -64,7 +64,7 @@ func (repo accessRepo) Find(ctx context.Context, info AccessData) (model.Access,
 func (repo accessRepo) Delete(ctx context.Context, data AccessData) error {
 	sql := "DELETE FROM Access WHERE id = ? AND userID = ?"
 	args := args.Args(sqluuid.Wrap(data.AccessID), sqluuid.Wrap(data.UserID))
-	_, err := repo.db.ExecContext(ctx, sql, args)
+	_, err := repo.db.ExecContext(ctx, sql, args...)
 	if err != nil {
 		return errors.Wrap(err, sql, args)
 	}

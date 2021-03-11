@@ -17,6 +17,7 @@ export type SignUpData = {
 export type SignInData = {
     email: string
     password: string
+    remember: boolean
 }
 
 export type User = {
@@ -67,13 +68,18 @@ class Impl implements Service {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        email: data.email,
+                        password: data.password,
+                    })
                 }
             ),
             res => {
                 this.accessSyncToken = res.accessSyncToken
                 this.refreshToken = res.refreshToken
-                localStorage.setItem(refreshTokenKey, this.refreshToken!)
+                if(data.remember) {
+                    localStorage.setItem(refreshTokenKey, this.refreshToken!)
+                }
                 return {
                     name: res.name!,
                     email: res.email!

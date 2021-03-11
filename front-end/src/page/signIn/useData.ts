@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-export default function useModel() {
+export default function useData() {
     const [email, setEmail] = React.useState("")
     const [password, setPassword] = React.useState("")
     const [remember, setRemember] = React.useState(false)
@@ -10,7 +10,7 @@ export default function useModel() {
             password,
             remember
         },
-        event: {
+        onChange: {
             onEmailChange: setEmail,
             onPasswordChange: setPassword,
             onRememberChange: () => setRemember(!remember)

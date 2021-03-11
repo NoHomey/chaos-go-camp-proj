@@ -1,7 +1,12 @@
-import useModel from "./useModel"
+import useData from "./useData"
+import useSignIn from "./useSignIn"
 import Page from "./Page"
 
 export default function SignIn() {
-    const model = useModel()
-    return <Page model={model} />
+    const {data, onChange} = useData()
+    const event = {
+        ...onChange,
+        onSignIn: useSignIn()
+    }
+    return <Page data={data} event={event} />
 }

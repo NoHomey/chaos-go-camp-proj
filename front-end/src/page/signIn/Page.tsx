@@ -9,6 +9,7 @@ import email from "../../validation/email"
 import password from "../../validation/password"
 import { every } from "../../validation/Result"
 import useForceError from "../../hook/useForceError"
+import { SignInData } from "../../service/User"
 
 const links = (
     <Grid container>
@@ -26,22 +27,20 @@ const links = (
 )
 
 export interface Props {
-    model: {
-        data: {
-            email: string
-            password: string
-            remember: boolean
-        }
-        event: {
-            onEmailChange: (value: string) => void
-            onPasswordChange: (value: string) => void
-            onRememberChange: () => void
-        }
+    data: {
+        email: string
+        password: string
+        remember: boolean
+    }
+    event: {
+        onEmailChange: (value: string) => void
+        onPasswordChange: (value: string) => void
+        onRememberChange: () => void
+        onSignIn: (data: SignInData) => void
     }
 }
 
-const Page: React.FC<Props> = ({model}) => {
-    const {data, event} = model
+const Page: React.FC<Props> = ({data, event}) => {
     const emailRes = email(data.email)
     const passwordRes = password(data.password)
     const valid = every([emailRes, passwordRes])
@@ -50,6 +49,8 @@ const Page: React.FC<Props> = ({model}) => {
         <Layout actionButtonLabel="Sign in" link={links} onAction={() => {
             if(!valid) {
                 showValidation()
+            } else {
+                event.onSignIn(data)
             }
         }}>
             <InputField

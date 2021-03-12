@@ -39,6 +39,10 @@ function remove(tags: Tag[], idx: number): Tag[] {
 }
 
 function add(tags: Tag[], tag: Tag): Tag[] {
+    const exists = tags.some(t => t.value === tag.value)
+    if(exists) {
+        return tags
+    }
     const n = [...tags, tag]
     n.sort((a, b) => {
         if(a.priority < b.priority) {

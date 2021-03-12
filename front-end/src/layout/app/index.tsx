@@ -2,15 +2,13 @@ import * as React from "react"
 import AppBar from "./Bar"
 import NavList from "./NavList"
 import Drawer from "@material-ui/core/Drawer"
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        main: {
-            width: "100%"
-        }
-    }),
-);
+const useStyles = makeStyles(() => ({
+    main: {
+        width: "100%"
+    }
+}))
 
 export interface Props {
     onSignOut: () => void

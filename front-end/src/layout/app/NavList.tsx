@@ -2,16 +2,14 @@ import List from "@material-ui/core/List"
 import ListItem from "@material-ui/core/ListItem"
 import ListItemText from "@material-ui/core/ListItemText"
 import Divider from "@material-ui/core/Divider"
-import { createStyles, makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 
-const useStyles = makeStyles(() =>
-    createStyles({
-        list: {
-            width: 150
-        }
-    }),
-);
+const useStyles = makeStyles(() => ({
+    list: {
+        width: 150
+    }
+}))
 
 export interface Props {
     close: () => void

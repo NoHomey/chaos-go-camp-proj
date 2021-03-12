@@ -8,6 +8,6 @@ export default interface Blog {
     description: string
     tags: Tag[]
     quickNote: string
-    rating: number
+    rating: null | number
     level: null | Level
 }

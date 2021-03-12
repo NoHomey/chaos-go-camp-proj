@@ -2,8 +2,8 @@ import InfoBox, { BoxProps } from "./InfoBox"
 import RatingInput from "@material-ui/lab/Rating"
 
 export interface Props extends BoxProps {
-    value: number
-    onValueChange: (val: number) => void
+    value: null | number
+    onValueChange: (val: null | number) => void
 }
 
 const Rating: React.FC<Props> = props => {
@@ -13,6 +13,7 @@ const Rating: React.FC<Props> = props => {
         info="Rating:"
         boxProps={rest}>
         <RatingInput
+            name="rating"
             value={value}
             onChange={(e, val) => onValueChange(val!)}
             max={15}

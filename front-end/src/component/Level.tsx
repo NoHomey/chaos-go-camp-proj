@@ -13,8 +13,11 @@ const Comp: React.FC<Props> = props => {
     return (
     <InfoBox
         info="Level:"
-        boxProps={props}>
-        <ToggleButtonGroup exclusive value={value}>
+        boxProps={rest}>
+        <ToggleButtonGroup
+            exclusive
+            value={value}
+            onChange={(e, val) => onValueChange(val)}>
             <ToggleButton value={Level.Beginner}>
                 Beginner
             </ToggleButton>

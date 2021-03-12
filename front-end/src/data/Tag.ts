@@ -4,7 +4,9 @@ export enum TagPriorty {
     Normal
 }
 
-export default interface Tag {
+export interface Tag {
     value: string
     priority: TagPriorty
 }
+
+export default Tag

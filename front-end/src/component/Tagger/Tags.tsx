@@ -1,17 +1,18 @@
-import Tag from "../data/Tag"
+import Tag from "../../data/Tag"
 import Box from "@material-ui/core/Box"
 import Grid from "@material-ui/core/Grid"
 import Chip from "@material-ui/core/Chip"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
-import { PriorityToColor } from "../muiUtil/Tag"
+import { PriorityToColor } from "../../muiUtil/Tag"
 import AddIcon from "@material-ui/icons/Add"
 
 import { makeStyles } from "@material-ui/core/styles"
 
 export interface Props {
+    marginY: number,
     tags: Tag[],
-    marginY: number
+    onAddTag: () => void
 }
 
 const addIcon = <AddIcon />
@@ -40,6 +41,7 @@ const Tags: React.FC<Props> = props => {
                     color="primary"
                     startIcon={addIcon}
                     className={classes.addTagBtn}
+                    onClick={props.onAddTag}
                 >
                     Add tag
                     </Button>

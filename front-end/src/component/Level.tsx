@@ -11,9 +11,7 @@ export interface Props extends BoxProps {
 const Comp: React.FC<Props> = props => {
     const { value, onValueChange, ...rest } = props
     return (
-    <InfoBox
-        info="Level:"
-        boxProps={rest}>
+    <InfoBox info="Level:" {...rest}>
         <ToggleButtonGroup
             exclusive
             value={value}

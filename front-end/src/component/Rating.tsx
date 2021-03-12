@@ -9,9 +9,7 @@ export interface Props extends BoxProps {
 const Rating: React.FC<Props> = props => {
     const { value, onValueChange, ...rest } = props
     return (
-    <InfoBox
-        info="Rating:"
-        boxProps={rest}>
+    <InfoBox info="Rating:" {...rest}>
         <RatingInput
             name="rating"
             value={value}

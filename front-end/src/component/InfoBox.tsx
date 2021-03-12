@@ -5,8 +5,7 @@ import { makeStyles } from "@material-ui/core/styles"
 
 export type BoxProps = Omit<BoxProps_, "display" | "alignItems">
 
-export interface Props {
-    boxProps: BoxProps
+export interface Props extends BoxProps {
     info: string
     children: React.ReactNode
 }
@@ -18,9 +17,9 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const InfoBox: React.FC<Props> = ({
-    boxProps,
     info,
-    children
+    children,
+    ...boxProps
 }) => {
     const classes = useStyles()
     return (

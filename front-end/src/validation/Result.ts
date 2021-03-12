@@ -17,7 +17,7 @@ export function valid(): Result {
     }
 }
 
-export function every(results: Array<Result>): boolean {
+export function every(...results: Array<Result>): boolean {
     return results.every(res => res.valid)
 }
 

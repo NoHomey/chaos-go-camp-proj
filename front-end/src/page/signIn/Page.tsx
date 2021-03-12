@@ -43,7 +43,7 @@ export interface Props {
 const Page: React.FC<Props> = ({data, event}) => {
     const emailRes = email(data.email)
     const passwordRes = password(data.password)
-    const valid = every([emailRes, passwordRes])
+    const valid = every(emailRes, passwordRes)
     const [forceError, showValidation] = useForceError(valid)
     return (
         <Layout actionButtonLabel="Sign in" link={links} onAction={() => {

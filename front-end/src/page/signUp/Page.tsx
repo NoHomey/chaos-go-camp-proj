@@ -34,7 +34,7 @@ const Page: React.FC<Props> = ({model}) => {
     const emailRes = email(data.email)
     const passwordRes = password(data.password)
     const confirmPasswordRes = match(data.password, data.confirmPassword)
-    const valid = every([emailRes, passwordRes, confirmPasswordRes])
+    const valid = every(emailRes, passwordRes, confirmPasswordRes)
     const [forceError, showValidation] = useForceError(valid)
     return (
         <Layout actionButtonLabel="Sign in" link={link} onAction={() => {

@@ -6,13 +6,15 @@ import Tag from "../../data/Tag"
 export interface Props {
     marginY: number,
     tags: Tag[],
-    onAddTag: (tag: Tag) => void
+    onAddTag: (tag: Tag) => void,
+    onRemoveTag: (idx: number) => void
 }
 
 const Tagger: React.FC<Props> = ({
     marginY,
     tags,
-    onAddTag
+    onAddTag,
+    onRemoveTag
 }) => {
     const [open, setOpen] = React.useState(false)
     return (
@@ -20,7 +22,8 @@ const Tagger: React.FC<Props> = ({
             <Tags
                 marginY={marginY}
                 tags={tags}
-                onAddTag={() => setOpen(true)} />
+                onAddTag={() => setOpen(true)}
+                onRemoveTag={onRemoveTag} />
             <AddTag
                 state={{ open }}
                 event={{

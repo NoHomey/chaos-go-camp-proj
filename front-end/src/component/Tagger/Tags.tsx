@@ -13,6 +13,7 @@ export interface Props {
     marginY: number,
     tags: Tag[],
     onAddTag: () => void
+    onRemoveTag: (idx: number) => void 
 }
 
 const addIcon = <AddIcon />
@@ -47,12 +48,12 @@ const Tags: React.FC<Props> = props => {
                     </Button>
             </Box>
         <Grid container spacing={2} component="ul" className={classes.tags}>
-            {props.tags.map(({value, priority}) => (
+            {props.tags.map(({value, priority}, idx) => (
                 <Grid item component="li" key={value}>
                     <Chip
                         color={PriorityToColor(priority)}
                         label={value}
-                        onDelete={() => console.log(`deleting tag: ${value}`) } />
+                        onDelete={() => props.onRemoveTag(idx)} />
                 </Grid>
             ))}
         </Grid>

@@ -5,7 +5,6 @@ import Tag from "../../data/Tag"
 export default function useData(blog: Blog) {
     const [author, setAuthor] = React.useState(blog.author)
     const [title, setTitle] = React.useState(blog.title)
-    const [description, setDesc] = React.useState(blog.description)
     const [tags, setTags] = React.useState(blog.tags)
     const [quickNote, setQuickNote] = React.useState(blog.quickNote)
     const [rating, setRating] = React.useState(blog.rating)
@@ -15,7 +14,7 @@ export default function useData(blog: Blog) {
             feedURL: blog.feedURL,
             author,
             title,
-            description,
+            description: blog.description,
             tags,
             quickNote,
             rating,
@@ -24,7 +23,6 @@ export default function useData(blog: Blog) {
         event: {
             onAuthorChange: setAuthor,
             onTitleChange: setTitle,
-            onDescriptionChange: setDesc,
             onQuickNoteChange: setQuickNote,
             onRatingChange: setRating,
             onLevelChange: setLevel,

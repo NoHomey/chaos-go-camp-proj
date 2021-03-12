@@ -4,6 +4,7 @@ import Rating from "../Rating"
 import Level from "../Level"
 import Button from "@material-ui/core/Button"
 import Accordion from "../Accordion"
+import InfoBox from "../InfoBox"
 import Tagger from "../Tagger"
 import SaveIcon from "@material-ui/icons/Save"
 import Blog from "../../data/Blog"
@@ -35,7 +36,7 @@ export interface Props {
     onAction: (blog: Blog) => void
 }
 
-const Page: React.FC<Props> = ({
+const Form: React.FC<Props> = ({
     blog,
     actionBtnLabel,
     onAction
@@ -72,11 +73,15 @@ const Page: React.FC<Props> = ({
                 validation={titleRes}
                 forceError={forceError}
                 onValueChange={event.onTitleChange} />
+            {data.description.length === 0 ?
+            <InfoBox my={2} info="Blog description:">
+                Missing description from the author
+            </InfoBox> :
             <Accordion
                 className={classes.desc}
                 title="Blog description from the author"
-                body={data.description}
-            />
+                body={data.description} />
+            }
             <Rating
                 mt={4}
                 mb={1}
@@ -121,4 +126,4 @@ const Page: React.FC<Props> = ({
     )
 }
 
-export default Page
+export default Form

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import TextField, { TextFieldProps } from "@material-ui/core/TextField"
 import { Result, errorMsg } from '../validation/Result'
-import debounce from 'lodash.debounce'
+import useShowValidation from "../hook/useShowValidation"
 
 type PickProps
 = 'value'
@@ -12,27 +12,19 @@ type PickProps
 
 type InheritProps = Pick<TextFieldProps, PickProps>
 
-enum ValidationState { Init, Show, Hide }
-
 export interface Props extends InheritProps {
     validation: Result
     forceError: boolean
     onValueChange: (val: string) => void
 }
 
-const waitTime = 700
-
 export const InputField: React.FC<Props> = props => {
     const { validation, onValueChange, forceError, ...rest } = props
-    const [showValidation, setShowValidation] = React.useState(ValidationState.Init)
-    const debounceValidation = React.useCallback(
-        debounce(() => setShowValidation(ValidationState.Show), waitTime),
-        []
-    )
-    const showError =
-        showValidation === ValidationState.Show
-        ||
-        (forceError && (showValidation !== ValidationState.Hide))
+    const {
+        showError,
+        debounceValidation,
+        hideValidation,
+    } = useShowValidation(forceError)
     return (
         <TextField
             {...rest}
@@ -40,11 +32,11 @@ export const InputField: React.FC<Props> = props => {
             margin="normal"
             fullWidth
             onChange={e => {
-                setShowValidation(ValidationState.Hide)
+                hideValidation()
                 onValueChange(e.target.value)
                 debounceValidation()
             }}
-            onFocus={() => setShowValidation(ValidationState.Hide)}
+            onFocus={hideValidation}
             error={showError && !validation.valid}
             helperText={showError && errorMsg(validation)} />
     )

@@ -9,6 +9,7 @@ type PickProps
 | 'type'
 | 'required'
 | 'autoComplete'
+| 'InputLabelProps'
 
 type InheritProps = Pick<TextFieldProps, PickProps>
 

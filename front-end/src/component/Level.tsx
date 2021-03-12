@@ -1,25 +1,30 @@
 import InfoBox, { BoxProps } from "./InfoBox"
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup"
 import ToggleButton from "@material-ui/lab/ToggleButton"
+import Level from "../data/Level"
 
-export type Props = BoxProps
+export interface Props extends BoxProps {
+    value: null | Level
+    onValueChange: (val: null | Level) => void
+}
 
-const Level: React.FC<Props> = props => {
+const Comp: React.FC<Props> = props => {
+    const { value, onValueChange, ...rest } = props
     return (
     <InfoBox
         info="Level:"
         boxProps={props}>
-        <ToggleButtonGroup exclusive value="advanced">
-            <ToggleButton value="beginner">
+        <ToggleButtonGroup exclusive value={value}>
+            <ToggleButton value={Level.Beginner}>
                 Beginner
             </ToggleButton>
-            <ToggleButton value="intermediate">
+            <ToggleButton value={Level.Intermediate}>
                 Intermediate
             </ToggleButton>
-            <ToggleButton value="advanced">
+            <ToggleButton value={Level.Advanced}>
                 Advanced
             </ToggleButton>
-            <ToggleButton value="master">
+            <ToggleButton value={Level.Master}>
                 Master
             </ToggleButton>
         </ToggleButtonGroup>
@@ -27,4 +32,4 @@ const Level: React.FC<Props> = props => {
     )
 }
 
-export default Level
+export default Comp

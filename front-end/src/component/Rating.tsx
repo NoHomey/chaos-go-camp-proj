@@ -1,15 +1,20 @@
 import InfoBox, { BoxProps } from "./InfoBox"
 import RatingInput from "@material-ui/lab/Rating"
 
-export type Props = BoxProps
+export interface Props extends BoxProps {
+    value: number
+    onValueChange: (val: number) => void
+}
 
 const Rating: React.FC<Props> = props => {
+    const { value, onValueChange, ...rest } = props
     return (
     <InfoBox
         info="Rating:"
-        boxProps={props}>
+        boxProps={rest}>
         <RatingInput
-            defaultValue={0}
+            value={value}
+            onChange={(e, val) => onValueChange(val!)}
             max={15}
             size="large" />
     </InfoBox>

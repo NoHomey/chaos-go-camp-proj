@@ -24,6 +24,7 @@ export const InputField: React.FC<Props> = props => {
         showError,
         debounceValidation,
         hideValidation,
+        showValidation,
     } = useShowValidation(forceError)
     return (
         <TextField
@@ -37,6 +38,7 @@ export const InputField: React.FC<Props> = props => {
                 debounceValidation()
             }}
             onFocus={hideValidation}
+            onBlur={showValidation}
             error={showError && !validation.valid}
             helperText={showError && errorMsg(validation)} />
     )

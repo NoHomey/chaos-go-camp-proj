@@ -6,18 +6,20 @@ enum ValidationState { Init, Show, Hide }
 const waitTime = 700
 
 export default function useShowValidation(forceError: boolean) {
-    const [showValidation, setShowValidation] = React.useState(ValidationState.Init)
+    const [show, setShow] = React.useState(ValidationState.Init)
+    const showValidation = () => setShow(ValidationState.Show)
     const debounceValidation = React.useCallback(
-        debounce(() => setShowValidation(ValidationState.Show), waitTime),
+        debounce(showValidation, waitTime),
         []
     )
     const showError =
-        showValidation === ValidationState.Show
+        show === ValidationState.Show
         ||
-        (forceError && (showValidation !== ValidationState.Hide))
+        (forceError && (show !== ValidationState.Hide))
     return {
         showError,
         debounceValidation,
-        hideValidation: () => setShowValidation(ValidationState.Hide)
+        showValidation,
+        hideValidation: () => setShow(ValidationState.Hide)
     }
 }

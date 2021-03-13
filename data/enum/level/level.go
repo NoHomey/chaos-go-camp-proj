@@ -34,7 +34,7 @@ func FromOrd(ordNum ord) Level {
 	return Level{ordNum}
 }
 
-//FromNum returns Rating for the given number.
+//FromNum returns Level for the given number.
 func FromNum(val uint8) Level {
 	num := MaxOrd
 	if val < MaxNum {

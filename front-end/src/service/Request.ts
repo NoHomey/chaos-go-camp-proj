@@ -3,7 +3,7 @@ import { Service as UserService } from "./User"
 
 export interface Service {
     Get<T>(uri: string): Response<T>
-    Post<T>(uri: string, body: Object): Response<T>  
+    Post<T>(uri: string, body: object): Response<T>  
 }
 
 class Impl implements Service {
@@ -27,7 +27,7 @@ class Impl implements Service {
         )
     }
 
-    public Post<T>(uri: string, body: Object): Response<T> {
+    public Post<T>(uri: string, body: object): Response<T> {
         const headers = { 'Content-Type': 'application/json' }
         this.userService.AugmentHeaders(headers)
         return Wrap<T>(

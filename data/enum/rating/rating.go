@@ -1,6 +1,9 @@
 package rating
 
-import "github.com/segmentio/encoding/json"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/segmentio/encoding/json"
+)
 
 //Ords are the availible order numbers.
 const (
@@ -52,9 +55,16 @@ func (rating Rating) Ord() uint8 {
 	return uint8(rating.ordNum)
 }
 
-//MarshalJSON implements json.Marshaler
+//MarshalJSON implements json.Marshaler.
 func (rating Rating) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rating.ordNum)
+}
+
+//RegisterValidator registers field validator.
+func RegisterValidator(validate *validator.Validate) {
+	validate.RegisterValidation("rating", func(fl validator.FieldLevel) bool {
+		return fl.Field().Interface().(uint8) <= MaxNum
+	})
 }
 
 type ord uint8

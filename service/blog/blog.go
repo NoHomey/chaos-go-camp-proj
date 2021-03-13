@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
+	"github.com/NoHomey/chaos-go-camp-proj/data/enum/level"
+	"github.com/NoHomey/chaos-go-camp-proj/data/enum/rating"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/level"
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/rating"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/repo"
 	"github.com/NoHomey/chaos-go-camp-proj/service/tmvalerrs"

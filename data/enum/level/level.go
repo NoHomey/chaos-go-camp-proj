@@ -1,6 +1,9 @@
 package level
 
-import "github.com/segmentio/encoding/json"
+import (
+	"github.com/go-playground/validator/v10"
+	"github.com/segmentio/encoding/json"
+)
 
 const (
 	//OrdNotSelected is the order number for not selected level.
@@ -45,9 +48,16 @@ func (level Level) Ord() uint8 {
 	return uint8(level.ordNum)
 }
 
-//MarshalJSON implements json.Marshaler
+//MarshalJSON implements json.Marshaler.
 func (level Level) MarshalJSON() ([]byte, error) {
 	return json.Marshal(level.ordNum)
+}
+
+//RegisterValidator registers field validator.
+func RegisterValidator(validate *validator.Validate) {
+	validate.RegisterValidation("level", func(fl validator.FieldLevel) bool {
+		return fl.Field().Interface().(uint8) <= MaxNum
+	})
 }
 
 type ord uint8

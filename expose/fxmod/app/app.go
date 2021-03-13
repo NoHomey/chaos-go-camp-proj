@@ -9,6 +9,7 @@ import (
 	"github.com/NoHomey/chaos-go-camp-proj/expose/reqlogger"
 	"github.com/NoHomey/chaos-go-camp-proj/logcrtr"
 	miscfx "github.com/NoHomey/chaos-go-camp-proj/misc/fx"
+	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
@@ -51,6 +52,7 @@ var Module = fx.Options(
 		return app
 	}),
 	fx.Invoke(logger.Register),
+	fx.Invoke(data.RegisterValidators),
 )
 
 const (

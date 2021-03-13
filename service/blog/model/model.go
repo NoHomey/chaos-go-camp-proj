@@ -3,8 +3,8 @@ package model
 import (
 	"time"
 
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/level"
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/rating"
+	"github.com/NoHomey/chaos-go-camp-proj/data/enum/level"
+	"github.com/NoHomey/chaos-go-camp-proj/data/enum/rating"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

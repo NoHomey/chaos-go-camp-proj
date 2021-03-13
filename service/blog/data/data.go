@@ -3,8 +3,6 @@ package data
 import (
 	"regexp"
 
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/level"
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/enum/rating"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -30,12 +28,6 @@ type FetchBlogs struct {
 
 //RegisterValidators registers field validators
 func RegisterValidators(validate *validator.Validate) {
-	validate.RegisterValidation("rating", func(fl validator.FieldLevel) bool {
-		return fl.Field().Interface().(uint8) <= rating.MaxNum
-	})
-	validate.RegisterValidation("level", func(fl validator.FieldLevel) bool {
-		return fl.Field().Interface().(uint8) <= level.MaxNum
-	})
 	validate.RegisterValidation("tags", func(fl validator.FieldLevel) bool {
 		list := fl.Field().Interface().([]string)
 		for i := range list {

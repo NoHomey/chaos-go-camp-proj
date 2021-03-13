@@ -29,9 +29,11 @@ func UseCollection(coll *mongo.Collection) Repo {
 
 //FetchData represents data for fetching.
 type FetchData struct {
-	Tags  []tag.Tag
-	Count uint32
-	After *primitive.ObjectID
+	Rating rating.Rating
+	Level  level.Level
+	Tags   []tag.Tag
+	Count  uint32
+	After  *primitive.ObjectID
 }
 
 //BlogData is the data for saving blogs.
@@ -87,14 +89,15 @@ func (r repo) findPaged(ctx context.Context, userID uuid.UUID, data *FetchData) 
 	opts.SetLimit(int64(data.Count))
 	filter := bson.D{
 		{Key: "userID", Value: userID[:]},
+		{Key: "level", Value: data.Level.Ord()},
+		{Key: "rating", Value: data.Rating.Ord()},
 		{Key: "tags", Value: bson.M{"$all": data.Tags}},
 	}
 	if data.After != nil {
-		filter = bson.D{
-			filter[0],
-			{Key: "_id", Value: bson.M{"$gt": data.After}},
-			filter[1],
-		}
+		filter = append(
+			filter,
+			bson.E{Key: "_id", Value: bson.M{"$gt": data.After}},
+		)
 	}
 	return r.coll.Find(ctx, filter, opts)
 }

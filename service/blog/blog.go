@@ -122,9 +122,11 @@ func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.Fet
 		}
 	}
 	blogs, err := srvc.blogRepo.Fetch(ctx, userID, &repo.FetchData{
-		Tags:  data.Tags,
-		Count: data.Count,
-		After: after,
+		Tags:   data.Tags,
+		Count:  data.Count,
+		Rating: data.Rating,
+		Level:  data.Level,
+		After:  after,
 	})
 	if err != nil {
 		srvc.logger.Error(

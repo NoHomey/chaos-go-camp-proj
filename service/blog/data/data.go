@@ -22,9 +22,11 @@ type Blog struct {
 
 //FetchBlogs is data for fetching blogs.
 type FetchBlogs struct {
-	Tags  []tag.Tag `json:"tags"`
-	Count uint32    `json:"count" validate:"min=10"`
-	After string    `json:"after" validate:"optObjectID"`
+	Rating rating.Rating `json:"rating"`
+	Level  level.Level   `json:"level"`
+	Tags   []tag.Tag     `json:"tags"`
+	Count  uint32        `json:"count" validate:"min=10"`
+	After  string        `json:"after" validate:"optObjectID"`
 }
 
 //RegisterValidators registers field validators

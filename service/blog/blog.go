@@ -7,6 +7,7 @@ import (
 	"github.com/NoHomey/chaos-go-camp-proj/ctxerr"
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/level"
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/rating"
+	"github.com/NoHomey/chaos-go-camp-proj/data/tag"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/repo"
@@ -27,7 +28,7 @@ type Blog struct {
 	Description   string        `json:"descrition,omitempty"`
 	Rating        rating.Rating `json:"rating"`
 	Level         level.Level   `json:"level"`
-	Tags          []string      `json:"tags"`
+	Tags          []tag.Tag     `json:"tags"`
 	QuickNote     QuickNote     `json:"quickNote"`
 	SavedAt       time.Time     `json:"savedAt"`
 	StartedAt     *time.Time    `json:"startedAt,omitempty"`
@@ -129,7 +130,7 @@ func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.Fet
 		srvc.logger.Error(
 			"Could not fetch blogs",
 			zap.String("userID", userID.String()),
-			zap.Strings("tags", data.Tags),
+			zap.Strings("tags", tag.Tags(data.Tags)),
 			zap.Uint32("count", data.Count),
 			zap.Reflect("after", data.After),
 			zap.Error(err),

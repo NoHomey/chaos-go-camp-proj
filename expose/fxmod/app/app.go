@@ -3,13 +3,13 @@ package app
 import (
 	"time"
 
+	"github.com/NoHomey/chaos-go-camp-proj/data"
 	"github.com/NoHomey/chaos-go-camp-proj/env"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/errhandler"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/middleware/logger"
 	"github.com/NoHomey/chaos-go-camp-proj/expose/reqlogger"
 	"github.com/NoHomey/chaos-go-camp-proj/logcrtr"
 	miscfx "github.com/NoHomey/chaos-go-camp-proj/misc/fx"
-	"github.com/NoHomey/chaos-go-camp-proj/service/blog/data"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"

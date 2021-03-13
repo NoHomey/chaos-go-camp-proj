@@ -1,42 +1,32 @@
 package data
 
 import (
-	"regexp"
-
+	"github.com/NoHomey/chaos-go-camp-proj/data/tag"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 //Blog is the blog data.
 type Blog struct {
-	FeedURL     string   `json:"feedURL" validate:"url"`
-	Author      string   `json:"author" valiadate:"required"`
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Rating      uint8    `json:"rating" validate:"rating"`
-	Level       uint8    `json:"level" validate:"level"`
-	Tags        []string `json:"tags" validate:"tags"`
-	QuickNote   string   `json:"qickNote"`
+	FeedURL     string    `json:"feedURL" validate:"url"`
+	Author      string    `json:"author" valiadate:"required"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Rating      uint8     `json:"rating" validate:"rating"`
+	Level       uint8     `json:"level" validate:"level"`
+	Tags        []tag.Tag `json:"tags" validate:"tags"`
+	QuickNote   string    `json:"qickNote"`
 }
 
 //FetchBlogs is data for fetching blogs.
 type FetchBlogs struct {
-	Tags  []string `json:"tags" validate:"tags"`
-	Count uint32   `json:"count" validate:"min=10"`
-	After string   `json:"after" validate:"optObjectID"`
+	Tags  []tag.Tag `json:"tags" validate:"tags"`
+	Count uint32    `json:"count" validate:"min=10"`
+	After string    `json:"after" validate:"optObjectID"`
 }
 
 //RegisterValidators registers field validators
 func RegisterValidators(validate *validator.Validate) {
-	validate.RegisterValidation("tags", func(fl validator.FieldLevel) bool {
-		list := fl.Field().Interface().([]string)
-		for i := range list {
-			if !tagRegExp.MatchString(list[i]) {
-				return false
-			}
-		}
-		return true
-	})
 	validate.RegisterValidation("optObjectID", func(fl validator.FieldLevel) bool {
 		val := fl.Field().String()
 		if len(val) == 0 {
@@ -46,5 +36,3 @@ func RegisterValidators(validate *validator.Validate) {
 		return err == nil
 	})
 }
-
-var tagRegExp = regexp.MustCompile("\\w+(?:(?:-|_)\\w+)*")

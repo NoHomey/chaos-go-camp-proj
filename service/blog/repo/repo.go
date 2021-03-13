@@ -6,6 +6,7 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/level"
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/rating"
+	"github.com/NoHomey/chaos-go-camp-proj/data/tag"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
@@ -27,7 +28,7 @@ func UseCollection(coll *mongo.Collection) Repo {
 
 //FetchData represents data for fetching.
 type FetchData struct {
-	Tags  []string
+	Tags  []tag.Tag
 	Count uint32
 	After *primitive.ObjectID
 }
@@ -40,7 +41,7 @@ type BlogData struct {
 	Description string
 	Rating      rating.Rating
 	Level       level.Level
-	Tags        []string
+	Tags        []tag.Tag
 	QuickNote   string
 }
 
@@ -121,7 +122,7 @@ type blog struct {
 	DescriptionField      string             `bson:"descrition,omitempty"`
 	RatingField           uint8              `bson:"rating"`
 	LevelField            uint8              `bson:"level"`
-	TagsField             []string           `bson:"tags"`
+	TagsField             []tag.Tag          `bson:"tags"`
 	QuickNoteObjField     quickNote          `bson:"quickNote"`
 	SavedAtField          time.Time          `bson:"savedAt,omitempty"`
 	StartedAtOptField     *time.Time         `bson:"startedAt,omitempty"`
@@ -163,7 +164,7 @@ func (b *blog) Level() level.Level {
 	return level.FromNum(b.LevelField)
 }
 
-func (b *blog) Tags() []string {
+func (b *blog) Tags() []tag.Tag {
 	return b.TagsField
 }
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/level"
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/rating"
+	"github.com/NoHomey/chaos-go-camp-proj/data/tag"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -17,7 +18,7 @@ type Blog interface {
 	Description() string
 	Rating() rating.Rating
 	Level() level.Level
-	Tags() []string
+	Tags() []tag.Tag
 	QuickNote() string
 	IsQickNotePublic() bool
 	SavedAt() time.Time

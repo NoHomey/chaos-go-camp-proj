@@ -44,7 +44,7 @@ type QuickNote struct {
 
 //Service is an abstraction for the Blog service.
 type Service interface {
-	Save(ctx context.Context, userID uuid.UUID, data *data.Blog) ctxerr.Error
+	Save(ctx context.Context, userID uuid.UUID, data *data.Blog) (primitive.ObjectID, ctxerr.Error)
 	Fetch(ctx context.Context, userID uuid.UUID, data *data.FetchBlogs) ([]*Blog, ctxerr.Error)
 }
 
@@ -59,10 +59,10 @@ type service struct {
 	validate *validator.Validate
 }
 
-func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog) ctxerr.Error {
+func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog) (primitive.ObjectID, ctxerr.Error) {
 	err := srvc.validate.Struct(data)
 	if err != nil {
-		return tmvalerrs.LogAndReturnCtxErr(&tmvalerrs.Ctx{
+		return primitive.ObjectID{}, tmvalerrs.LogAndReturnCtxErr(&tmvalerrs.Ctx{
 			Err:    err.(validator.ValidationErrors),
 			Logger: srvc.logger,
 			Msg:    "Invalid blog save data",
@@ -71,7 +71,7 @@ func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog
 			},
 		})
 	}
-	err = srvc.blogRepo.Save(ctx, userID, &repo.BlogData{
+	id, err := srvc.blogRepo.Save(ctx, userID, &repo.BlogData{
 		FeedURL:     data.FeedURL,
 		Author:      data.Author,
 		Title:       data.Title,
@@ -86,14 +86,14 @@ func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog
 			"Could not save blog",
 			zap.Error(err),
 		)
-		return ctxerr.NewInternal(err)
+		return primitive.ObjectID{}, ctxerr.NewInternal(err)
 	}
 	srvc.logger.Info(
 		"Saved blog",
 		zap.String("userID", userID.String()),
 		zap.String("feedURL", data.FeedURL),
 	)
-	return nil
+	return id, nil
 }
 
 func (srvc *service) Fetch(ctx context.Context, userID uuid.UUID, data *data.FetchBlogs) ([]*Blog, ctxerr.Error) {

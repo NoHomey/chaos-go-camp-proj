@@ -28,11 +28,11 @@ func (h Handler) Save(ctx *fiber.Ctx) error {
 	accessData := auth.AccessData(ctx)
 	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
 	defer cancel()
-	err := h.Service.Save(srvcCtx, accessData.UserID, blog)
+	id, err := h.Service.Save(srvcCtx, accessData.UserID, blog)
 	if err != nil {
 		return err
 	}
-	return sendresult.SendAndLog(ctx, fiber.StatusCreated, true, h.ReqLogger)
+	return sendresult.SendAndLog(ctx, fiber.StatusCreated, id, h.ReqLogger)
 }
 
 //Fetch fetches blogs.

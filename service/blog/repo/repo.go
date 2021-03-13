@@ -16,7 +16,7 @@ import (
 
 //Repo is an abstraction for the blog repository.
 type Repo interface {
-	Save(ctx context.Context, userID uuid.UUID, data *BlogData) error
+	Save(ctx context.Context, userID uuid.UUID, data *BlogData) (primitive.ObjectID, error)
 	Fetch(ctx context.Context, userID uuid.UUID, data *FetchData) ([]model.Blog, error)
 }
 
@@ -48,8 +48,8 @@ type repo struct {
 	coll *mongo.Collection
 }
 
-func (r repo) Save(ctx context.Context, userID uuid.UUID, data *BlogData) error {
-	_, err := r.coll.InsertOne(ctx, &blog{
+func (r repo) Save(ctx context.Context, userID uuid.UUID, data *BlogData) (primitive.ObjectID, error) {
+	res, err := r.coll.InsertOne(ctx, &blog{
 		UserIDHiddenField: userID[:],
 		FeedURLField:      data.FeedURL,
 		AuthorField:       data.Author,
@@ -64,7 +64,7 @@ func (r repo) Save(ctx context.Context, userID uuid.UUID, data *BlogData) error 
 		},
 		SavedAtField: time.Now(),
 	})
-	return err
+	return res.InsertedID.(primitive.ObjectID), err
 }
 
 func (r repo) Fetch(ctx context.Context, userID uuid.UUID, data *FetchData) ([]model.Blog, error) {

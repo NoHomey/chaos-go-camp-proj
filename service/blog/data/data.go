@@ -1,6 +1,8 @@
 package data
 
 import (
+	"github.com/NoHomey/chaos-go-camp-proj/data/enum/level"
+	"github.com/NoHomey/chaos-go-camp-proj/data/enum/rating"
 	"github.com/NoHomey/chaos-go-camp-proj/data/tag"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -8,14 +10,14 @@ import (
 
 //Blog is the blog data.
 type Blog struct {
-	FeedURL     string    `json:"feedURL" validate:"url"`
-	Author      string    `json:"author" valiadate:"required"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Rating      uint8     `json:"rating" validate:"rating"`
-	Level       uint8     `json:"level" validate:"level"`
-	Tags        []tag.Tag `json:"tags"`
-	QuickNote   string    `json:"qickNote"`
+	FeedURL     string        `json:"feedURL" validate:"url"`
+	Author      string        `json:"author" valiadate:"required"`
+	Title       string        `json:"title"`
+	Description string        `json:"description"`
+	Rating      rating.Rating `json:"rating"`
+	Level       level.Level   `json:"level"`
+	Tags        []tag.Tag     `json:"tags"`
+	QuickNote   string        `json:"qickNote"`
 }
 
 //FetchBlogs is data for fetching blogs.

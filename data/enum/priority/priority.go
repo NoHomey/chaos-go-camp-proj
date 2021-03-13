@@ -1,7 +1,6 @@
 package priority
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/segmentio/encoding/json"
 )
 
@@ -58,13 +57,6 @@ func (priority *Priority) UnmarshalJSON(b []byte) error {
 	}
 	*priority = FromNum(num)
 	return nil
-}
-
-//RegisterValidator registers field validator.
-func RegisterValidator(validate *validator.Validate) {
-	validate.RegisterValidation("priority", func(fl validator.FieldLevel) bool {
-		return fl.Field().Interface().(uint8) <= MaxNum
-	})
 }
 
 type ord uint8

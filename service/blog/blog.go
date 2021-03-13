@@ -77,8 +77,8 @@ func (srvc *service) Save(ctx context.Context, userID uuid.UUID, data *data.Blog
 		Author:      data.Author,
 		Title:       data.Title,
 		Description: data.Description,
-		Rating:      rating.FromNum(data.Rating),
-		Level:       level.FromNum(data.Level),
+		Rating:      data.Rating,
+		Level:       data.Level,
 		Tags:        data.Tags,
 		QuickNote:   data.QuickNote,
 	})

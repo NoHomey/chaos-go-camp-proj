@@ -10,7 +10,7 @@ import (
 //Tag represents tag data.
 type Tag struct {
 	Value    string            `json:"value" bson:"value" validate:"tag"`
-	Priority priority.Priority `json:"priority" bson:"priority" validate:"priority"`
+	Priority priority.Priority `json:"priority" bson:"priority"`
 }
 
 //Tags returns tag values.

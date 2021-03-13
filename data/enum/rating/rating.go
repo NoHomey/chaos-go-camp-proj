@@ -1,7 +1,6 @@
 package rating
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/segmentio/encoding/json"
 )
 
@@ -60,11 +59,15 @@ func (rating Rating) MarshalJSON() ([]byte, error) {
 	return json.Marshal(rating.ordNum)
 }
 
-//RegisterValidator registers field validator.
-func RegisterValidator(validate *validator.Validate) {
-	validate.RegisterValidation("rating", func(fl validator.FieldLevel) bool {
-		return fl.Field().Interface().(uint8) <= MaxNum
-	})
+//UnmarshalJSON implements json.Unmarshaler.
+func (rating *Rating) UnmarshalJSON(b []byte) error {
+	var num uint8
+	err := json.Unmarshal(b, &num)
+	if err != nil {
+		return err
+	}
+	*rating = FromNum(num)
+	return nil
 }
 
 type ord uint8

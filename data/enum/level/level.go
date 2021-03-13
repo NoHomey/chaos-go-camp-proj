@@ -1,7 +1,6 @@
 package level
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/segmentio/encoding/json"
 )
 
@@ -53,11 +52,15 @@ func (level Level) MarshalJSON() ([]byte, error) {
 	return json.Marshal(level.ordNum)
 }
 
-//RegisterValidator registers field validator.
-func RegisterValidator(validate *validator.Validate) {
-	validate.RegisterValidation("level", func(fl validator.FieldLevel) bool {
-		return fl.Field().Interface().(uint8) <= MaxNum
-	})
+//UnmarshalJSON implements json.Unmarshaler.
+func (level *Level) UnmarshalJSON(b []byte) error {
+	var num uint8
+	err := json.Unmarshal(b, &num)
+	if err != nil {
+		return err
+	}
+	*level = FromNum(num)
+	return nil
 }
 
 type ord uint8

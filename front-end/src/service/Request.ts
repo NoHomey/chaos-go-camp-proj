@@ -2,8 +2,8 @@ import { Response, Wrap } from "../response";
 import { Service as UserService } from "./User"
 
 export interface Service {
-    Get<T>(url: string): Response<T>
-    Post<T>(url: string, body: Object): Response<T>  
+    Get<T>(uri: string): Response<T>
+    Post<T>(uri: string, body: Object): Response<T>  
 }
 
 class Impl implements Service {
@@ -13,12 +13,12 @@ class Impl implements Service {
         this.userService = userService
     }
 
-    public Get<T>(url: string): Response<T> {
+    public Get<T>(uri: string): Response<T> {
         const headers = {}
         this.userService.AugmentHeaders(headers)
         return Wrap<T>(
             fetch(
-                url,
+                uri,
                 {
                     cache: "no-cache",
                     headers: headers
@@ -27,12 +27,12 @@ class Impl implements Service {
         )
     }
 
-    public Post<T>(url: string, body: Object): Response<T> {
+    public Post<T>(uri: string, body: Object): Response<T> {
         const headers = { 'Content-Type': 'application/json' }
         this.userService.AugmentHeaders(headers)
         return Wrap<T>(
             fetch(
-                url,
+                uri,
                 {
                     method: "POST",
                     cache: "no-cache",

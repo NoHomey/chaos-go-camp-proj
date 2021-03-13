@@ -1,11 +1,14 @@
 import { Response, Consume, Make } from "../response";
 
+type Hs = Headers | Record<string, string>
+
 export interface Service {
     Reload(): null | Response<User>
     SignUp(data: SignUpData): Response<void>
     SignIn(data: SignInData): Response<User>
     SignOut(): Response<void>
     Access(): Response<User>
+    AugmentHeaders(headers: Hs): Hs
 }
 
 export type SignUpData = {
@@ -127,6 +130,15 @@ class Impl implements Service {
         )
     }
 
+    public AugmentHeaders(headers: Hs): Hs {
+        if(headers instanceof Headers) {
+            headers.set(accessSyncTokenHeader, this.accessSyncToken)
+        } else {
+            headers[accessSyncTokenHeader] = this.accessSyncToken
+        }
+        return headers
+    }
+
     private refresh(duration: number) {
         const r = Math.random()
         const time = Math.floor(0.3 * (1 + r) / 2 * duration)
@@ -156,7 +168,9 @@ class Impl implements Service {
     }
 }
 
-export default Impl
+export default function create(): Service {
+    return new Impl()
+}
 
 const url = {
     signUp: "/user/sign-up",
@@ -166,5 +180,7 @@ const url = {
 }
 
 const refreshTokenKey = "$__refresh-toke__$"
+
+const accessSyncTokenHeader = "X-Access-Sync-Token"
 
 const retryTime = 500

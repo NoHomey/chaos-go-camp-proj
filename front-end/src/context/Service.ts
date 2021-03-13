@@ -1,13 +1,21 @@
 import * as React from "react"
-import User, { Service as UserService } from "../service/User" 
+import createUserService, { Service as UserService } from "../service/User" 
+import createReqService, { Service as ReqService } from "../service/Request"
 
 export interface Service {
     user: UserService
+    request: ReqService
 }
 
-const Ctx = React.createContext<Service>({
-    user: new User()
-})
+const userService = createUserService()
+const reqService = createReqService(userService)
+
+export const init: Service = {
+    user: userService,
+    request: reqService
+}
+
+const Ctx = React.createContext(init)
 
 export const Provider = Ctx.Provider
 

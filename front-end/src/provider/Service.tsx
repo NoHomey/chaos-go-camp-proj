@@ -1,13 +1,8 @@
-import { Provider, Service } from "../context/Service"
-import User from "../service/User"
-
-const service: Service = {
-    user: new User()
-}
+import { Provider, init } from "../context/Service"
 
 const ServiceProvider: React.FC<{}> = ({ children }) => {
     return (
-        <Provider value={service}>
+        <Provider value={init}>
             {children}
         </Provider>
     )

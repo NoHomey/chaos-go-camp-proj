@@ -3,8 +3,10 @@ package level
 import "github.com/segmentio/encoding/json"
 
 const (
+	//OrdNotSelected is the order number for not selected level.
+	OrdNotSelected ord = iota
 	//OrdBeginner is the order number for the beginner level.
-	OrdBeginner ord = iota
+	OrdBeginner
 	//OrdIntermediate is the order number for the intermediate level.
 	OrdIntermediate
 	//OrdAdvanced is the order number for the advanced level.

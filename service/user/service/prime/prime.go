@@ -14,9 +14,9 @@ import (
 //Service abstracts the main service.
 type Service interface {
 	SignUp(ctx context.Context, user data.User) ctxerr.Error
-	SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, time.Duration, ctxerr.Error)
+	SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, int64, ctxerr.Error)
 	SignOut(ctx context.Context, refresh access.SyncToken) ctxerr.Error
-	ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, time.Duration, ctxerr.Error)
+	ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, int64, ctxerr.Error)
 }
 
 //Use returns a Service implementation wich uses the proviced user.Service and access.Service.
@@ -33,7 +33,7 @@ func (srvc service) SignUp(ctx context.Context, user data.User) ctxerr.Error {
 	return srvc.userService.Register(ctx, user)
 }
 
-func (srvc service) SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, time.Duration, ctxerr.Error) {
+func (srvc service) SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, int64, ctxerr.Error) {
 	authCtx, authCancle := context.WithTimeout(ctx, time.Second)
 	defer authCancle()
 	user, err := srvc.userService.Authenticate(authCtx, data)
@@ -50,6 +50,6 @@ func (srvc service) SignOut(ctx context.Context, refresh access.SyncToken) ctxer
 	return srvc.accessService.RevokeAccess(ctx, refresh)
 }
 
-func (srvc service) ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, time.Duration, ctxerr.Error) {
+func (srvc service) ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, int64, ctxerr.Error) {
 	return srvc.accessService.RefreshAccess(ctx, refresh)
 }

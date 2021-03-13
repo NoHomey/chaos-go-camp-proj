@@ -138,11 +138,11 @@ func (err errInvalAuthHeader) HttpStatusCode() int {
 }
 
 type accessRes struct {
-	Name            string        `json:"name"`
-	Email           string        `json:"email"`
-	RefreshToken    string        `json:"refreshToken,omitempty"`
-	AccessSyncToken string        `json:"accessSyncToken"`
-	AccessDuration  time.Duration `json:"accessDuration"`
+	Name            string `json:"name"`
+	Email           string `json:"email"`
+	RefreshToken    string `json:"refreshToken,omitempty"`
+	AccessSyncToken string `json:"accessSyncToken"`
+	AccessDuration  int64  `json:"accessDuration"`
 }
 
 const refreshSyncTokenKey = "refresh-sync-token"

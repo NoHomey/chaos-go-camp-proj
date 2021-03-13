@@ -63,9 +63,9 @@ type TokenData struct {
 
 //Service abstracts the access service.
 type Service interface {
-	GrantAccess(ctx context.Context, user model.User) (*Token, time.Duration, ctxerr.Error)
+	GrantAccess(ctx context.Context, user model.User) (*Token, int64, ctxerr.Error)
 	RemExpired(ctx context.Context) ctxerr.Error
-	RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, time.Duration, ctxerr.Error)
+	RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, int64, ctxerr.Error)
 	RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.Error
 	DecodeAndValidateAccessToken(access SyncToken) (*TokenData, ctxerr.Error)
 }
@@ -82,7 +82,7 @@ type service struct {
 	accessSecret  []byte
 }
 
-func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, time.Duration, ctxerr.Error) {
+func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, int64, ctxerr.Error) {
 	refreshID := uuid.New()
 	refreshToken, now, err := srvc.genSyncToken(&tokenGenData{
 		userID:        user.ID(),
@@ -127,7 +127,7 @@ func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, t
 		zap.Time("accessGratedAt", now),
 		zap.String("accessTokenID", accessID.String()),
 	)
-	return &Token{Refresh: refreshToken, Access: accessToken}, refreshDuration, nil
+	return &Token{Refresh: refreshToken, Access: accessToken}, accessDuration.Milliseconds(), nil
 }
 
 func (srvc service) RemExpired(ctx context.Context) ctxerr.Error {
@@ -140,7 +140,7 @@ func (srvc service) RemExpired(ctx context.Context) ctxerr.Error {
 	return nil
 }
 
-func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, time.Duration, ctxerr.Error) {
+func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, int64, ctxerr.Error) {
 	data, cerr := srvc.decodeRefreshToken(refresh)
 	if cerr != nil {
 		return nil, nil, 0, cerr
@@ -175,7 +175,7 @@ func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model
 		zap.String("tokenID", tokenID.String()),
 		zap.String("userEmail", found.UserEmail()),
 	)
-	return found, &token, refreshDuration, nil
+	return found, &token, accessDuration.Milliseconds(), nil
 }
 
 func (srvc service) RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.Error {

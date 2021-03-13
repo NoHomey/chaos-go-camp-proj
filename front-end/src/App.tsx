@@ -7,10 +7,12 @@ import { useState, State } from "./context/User"
 import { useReqDialog } from "./context/ReqDialog"
 import { Response } from "./response"
 import { User } from "./service/User"
+import { useHistory } from "react-router-dom"
 
 export default function App() {
     const userService = useService("user")
     const dialog = useReqDialog()
+    const history = useHistory()
     const { state, setUser, setStateToSign } = useState()
     const load = (resp: Response<User>) => {
         resp
@@ -49,6 +51,7 @@ export default function App() {
             .OnResult(() => {
                 setUser(null)
                 dialog.close()
+                history.replace("/")
             })
         dialog.showLoading("Signing out")
         setTimeout(res.Handle.bind(res), 1000)

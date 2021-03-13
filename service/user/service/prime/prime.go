@@ -14,9 +14,9 @@ import (
 //Service abstracts the main service.
 type Service interface {
 	SignUp(ctx context.Context, user data.User) ctxerr.Error
-	SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, ctxerr.Error)
+	SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, time.Duration, ctxerr.Error)
 	SignOut(ctx context.Context, refresh access.SyncToken) ctxerr.Error
-	ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, ctxerr.Error)
+	ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, time.Duration, ctxerr.Error)
 }
 
 //Use returns a Service implementation wich uses the proviced user.Service and access.Service.
@@ -33,23 +33,23 @@ func (srvc service) SignUp(ctx context.Context, user data.User) ctxerr.Error {
 	return srvc.userService.Register(ctx, user)
 }
 
-func (srvc service) SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, ctxerr.Error) {
+func (srvc service) SignIn(ctx context.Context, data data.Auth) (model.User, *access.Token, time.Duration, ctxerr.Error) {
 	authCtx, authCancle := context.WithTimeout(ctx, time.Second)
 	defer authCancle()
 	user, err := srvc.userService.Authenticate(authCtx, data)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, 0, err
 	}
 	accessCtx, accessCancel := context.WithTimeout(ctx, 2*time.Second)
 	defer accessCancel()
-	token, err := srvc.accessService.GrantAccess(accessCtx, user)
-	return user, token, err
+	token, duration, err := srvc.accessService.GrantAccess(accessCtx, user)
+	return user, token, duration, err
 }
 
 func (srvc service) SignOut(ctx context.Context, refresh access.SyncToken) ctxerr.Error {
 	return srvc.accessService.RevokeAccess(ctx, refresh)
 }
 
-func (srvc service) ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, ctxerr.Error) {
+func (srvc service) ObtainAccess(ctx context.Context, refresh access.SyncToken) (model.Access, *access.SyncToken, time.Duration, ctxerr.Error) {
 	return srvc.accessService.RefreshAccess(ctx, refresh)
 }

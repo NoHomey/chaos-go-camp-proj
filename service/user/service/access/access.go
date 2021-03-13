@@ -63,9 +63,9 @@ type TokenData struct {
 
 //Service abstracts the access service.
 type Service interface {
-	GrantAccess(ctx context.Context, user model.User) (*Token, ctxerr.Error)
+	GrantAccess(ctx context.Context, user model.User) (*Token, time.Duration, ctxerr.Error)
 	RemExpired(ctx context.Context) ctxerr.Error
-	RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, ctxerr.Error)
+	RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, time.Duration, ctxerr.Error)
 	RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.Error
 	DecodeAndValidateAccessToken(access SyncToken) (*TokenData, ctxerr.Error)
 }
@@ -82,7 +82,7 @@ type service struct {
 	accessSecret  []byte
 }
 
-func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, ctxerr.Error) {
+func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, time.Duration, ctxerr.Error) {
 	refreshID := uuid.New()
 	refreshToken, now, err := srvc.genSyncToken(&tokenGenData{
 		userID:        user.ID(),
@@ -92,7 +92,7 @@ func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, c
 		tokenDuration: refreshDuration,
 	})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	accessID := uuid.New()
 	accessToken, _, err := srvc.genSyncToken(&tokenGenData{
@@ -104,7 +104,7 @@ func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, c
 		refreshID:     &refreshID,
 	})
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	cerr := srvc.repo.Create(ctx, repo.AccessData{
 		UserID:   user.ID(),
@@ -118,7 +118,7 @@ func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, c
 			zap.String("userID", user.ID().String()),
 			zap.String("accessID", refreshID.String()),
 		)
-		return nil, ctxerr.NewInternal(cerr)
+		return nil, 0, ctxerr.NewInternal(cerr)
 	}
 	srvc.logger.Info(
 		"Granting access",
@@ -127,7 +127,7 @@ func (srvc service) GrantAccess(ctx context.Context, user model.User) (*Token, c
 		zap.Time("accessGratedAt", now),
 		zap.String("accessTokenID", accessID.String()),
 	)
-	return &Token{Refresh: refreshToken, Access: accessToken}, nil
+	return &Token{Refresh: refreshToken, Access: accessToken}, refreshDuration, nil
 }
 
 func (srvc service) RemExpired(ctx context.Context) ctxerr.Error {
@@ -140,10 +140,10 @@ func (srvc service) RemExpired(ctx context.Context) ctxerr.Error {
 	return nil
 }
 
-func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, ctxerr.Error) {
+func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model.Access, *SyncToken, time.Duration, ctxerr.Error) {
 	data, cerr := srvc.decodeRefreshToken(refresh)
 	if cerr != nil {
-		return nil, nil, cerr
+		return nil, nil, 0, cerr
 	}
 	found, err := srvc.repo.Find(ctx, *data)
 	if err != nil {
@@ -153,7 +153,7 @@ func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model
 			zap.String("accessID", data.AccessID.String()),
 			zap.Time("createdAt", data.Since),
 		)
-		return nil, nil, ctxerr.NewInternal(err)
+		return nil, nil, 0, ctxerr.NewInternal(err)
 	}
 	tokenID := uuid.New()
 	token, _, cerr := srvc.genSyncToken(&tokenGenData{
@@ -165,7 +165,7 @@ func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model
 		refreshID:     &data.AccessID,
 	})
 	if cerr != nil {
-		return nil, nil, cerr
+		return nil, nil, 0, cerr
 	}
 	srvc.logger.Info(
 		"Refreshing access",
@@ -175,7 +175,7 @@ func (srvc service) RefreshAccess(ctx context.Context, refresh SyncToken) (model
 		zap.String("tokenID", tokenID.String()),
 		zap.String("userEmail", found.UserEmail()),
 	)
-	return found, &token, nil
+	return found, &token, refreshDuration, nil
 }
 
 func (srvc service) RevokeAccess(ctx context.Context, refresh SyncToken) ctxerr.Error {

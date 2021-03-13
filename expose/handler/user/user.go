@@ -45,7 +45,7 @@ func (h Handler) SignIn(ctx *fiber.Ctx) error {
 	}
 	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 3*time.Second)
 	defer cancel()
-	user, token, err := h.Service.SignIn(srvcCtx, *authData)
+	user, token, duration, err := h.Service.SignIn(srvcCtx, *authData)
 	if err != nil {
 		return err
 	}
@@ -56,6 +56,7 @@ func (h Handler) SignIn(ctx *fiber.Ctx) error {
 		Email:           user.Email(),
 		RefreshToken:    token.Refresh.Token,
 		AccessSyncToken: token.Access.Sync,
+		AccessDuration:  duration,
 	}, h.ReqLogger)
 }
 
@@ -82,7 +83,7 @@ func (h Handler) ObtainAccess(ctx *fiber.Ctx) error {
 	}
 	srvcCtx, cancel := context.WithTimeout(ctx.Context(), 2*time.Second)
 	defer cancel()
-	access, accessToken, err := h.Service.ObtainAccess(srvcCtx, *token)
+	access, accessToken, duration, err := h.Service.ObtainAccess(srvcCtx, *token)
 	if err != nil {
 		return err
 	}
@@ -91,6 +92,7 @@ func (h Handler) ObtainAccess(ctx *fiber.Ctx) error {
 		Name:            access.UserName(),
 		Email:           access.UserEmail(),
 		AccessSyncToken: accessToken.Sync,
+		AccessDuration:  duration,
 	}, h.ReqLogger)
 }
 
@@ -136,10 +138,11 @@ func (err errInvalAuthHeader) HttpStatusCode() int {
 }
 
 type accessRes struct {
-	Name            string `json:"name"`
-	Email           string `json:"email"`
-	RefreshToken    string `json:"refreshToken,omitempty"`
-	AccessSyncToken string `json:"accessSyncToken"`
+	Name            string        `json:"name"`
+	Email           string        `json:"email"`
+	RefreshToken    string        `json:"refreshToken,omitempty"`
+	AccessSyncToken string        `json:"accessSyncToken"`
+	AccessDuration  time.Duration `json:"accessDuration"`
 }
 
 const refreshSyncTokenKey = "refresh-sync-token"

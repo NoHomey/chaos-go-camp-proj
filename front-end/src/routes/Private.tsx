@@ -1,5 +1,5 @@
 import { Switch, Route, Redirect } from "react-router-dom"
-import Page from "../page/feedImport"
+import Page from "../page/saveBlog"
 import routes from "./map"
 
 export default function Routes() {

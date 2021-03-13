@@ -7,7 +7,7 @@ export default function validate(str: string): Result {
         return required()
     }
     try {
-        const _ = new URL(str)
+        const _url = new URL(str)
         return valid()
     } catch(err) {
         return invalid("This is not a valid URL")

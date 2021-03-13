@@ -14,13 +14,13 @@ type Blog struct {
 	Description string    `json:"description"`
 	Rating      uint8     `json:"rating" validate:"rating"`
 	Level       uint8     `json:"level" validate:"level"`
-	Tags        []tag.Tag `json:"tags" validate:"tags"`
+	Tags        []tag.Tag `json:"tags"`
 	QuickNote   string    `json:"qickNote"`
 }
 
 //FetchBlogs is data for fetching blogs.
 type FetchBlogs struct {
-	Tags  []tag.Tag `json:"tags" validate:"tags"`
+	Tags  []tag.Tag `json:"tags"`
 	Count uint32    `json:"count" validate:"min=10"`
 	After string    `json:"after" validate:"optObjectID"`
 }

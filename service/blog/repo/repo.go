@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/level"
+	"github.com/NoHomey/chaos-go-camp-proj/data/enum/priority"
 	"github.com/NoHomey/chaos-go-camp-proj/data/enum/rating"
 	"github.com/NoHomey/chaos-go-camp-proj/data/tag"
 	"github.com/NoHomey/chaos-go-camp-proj/service/blog/model"
@@ -58,7 +59,7 @@ func (r repo) Save(ctx context.Context, userID uuid.UUID, data *BlogData) (primi
 		DescriptionField:  data.Description,
 		RatingField:       data.Rating.Ord(),
 		LevelField:        data.Level.Ord(),
-		TagsField:         data.Tags,
+		TagsField:         fromTags(data.Tags),
 		QuickNoteObjField: quickNote{
 			TextField:   data.QuickNote,
 			PublicField: false,
@@ -122,7 +123,7 @@ type blog struct {
 	DescriptionField      string             `bson:"descrition,omitempty"`
 	RatingField           uint8              `bson:"rating"`
 	LevelField            uint8              `bson:"level"`
-	TagsField             []tag.Tag          `bson:"tags"`
+	TagsField             []bsonTag          `bson:"tags"`
 	QuickNoteObjField     quickNote          `bson:"quickNote"`
 	SavedAtField          time.Time          `bson:"savedAt,omitempty"`
 	StartedAtOptField     *time.Time         `bson:"startedAt,omitempty"`
@@ -134,6 +135,33 @@ type blog struct {
 type quickNote struct {
 	TextField   string `bson:"text,omitempty"`
 	PublicField bool   `bson:"public"`
+}
+
+type bsonTag struct {
+	Value    string `bson:"value"`
+	Priority uint8  `bson:"priority"`
+}
+
+func toTags(list []bsonTag) []tag.Tag {
+	tags := make([]tag.Tag, len(list))
+	for i := range list {
+		tags[i] = tag.Tag{
+			Value:    list[i].Value,
+			Priority: priority.FromNum((list[i].Priority)),
+		}
+	}
+	return tags
+}
+
+func fromTags(tags []tag.Tag) []bsonTag {
+	list := make([]bsonTag, len(tags))
+	for i := range list {
+		list[i] = bsonTag{
+			Value:    tags[i].Value,
+			Priority: tags[i].Priority.Ord(),
+		}
+	}
+	return list
 }
 
 func (b *blog) ID() primitive.ObjectID {
@@ -165,7 +193,7 @@ func (b *blog) Level() level.Level {
 }
 
 func (b *blog) Tags() []tag.Tag {
-	return b.TagsField
+	return toTags(b.TagsField)
 }
 
 func (b *blog) QuickNote() string {

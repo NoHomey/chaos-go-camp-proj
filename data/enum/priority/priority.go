@@ -49,6 +49,17 @@ func (priority Priority) MarshalJSON() ([]byte, error) {
 	return json.Marshal(priority.ordNum)
 }
 
+//UnmarshalJSON implements json.Unmarshaler.
+func (priority *Priority) UnmarshalJSON(b []byte) error {
+	var num uint8
+	err := json.Unmarshal(b, &num)
+	if err != nil {
+		return err
+	}
+	*priority = FromNum(num)
+	return nil
+}
+
 //RegisterValidator registers field validator.
 func RegisterValidator(validate *validator.Validate) {
 	validate.RegisterValidation("priority", func(fl validator.FieldLevel) bool {

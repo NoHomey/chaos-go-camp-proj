@@ -1,7 +1,7 @@
 export enum TagPriorty {
-    Main,
+    Normal,
     Secondary,
-    Normal
+    Main
 }
 
 export interface Tag {

@@ -44,10 +44,10 @@ function add(tags: Tag[], tag: Tag): Tag[] {
     const n = [...tags, tag]
     n.sort((a, b) => {
         if(a.priority < b.priority) {
-            return -1
+            return 1
         }
         if(a.priority > b.priority) {
-            return 1
+            return -1
         }
         if(a.value < b.value) {
             return -1

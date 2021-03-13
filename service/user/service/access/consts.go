@@ -8,7 +8,7 @@ const (
 )
 
 const (
-	accessDuration  = 5 * time.Minute
+	accessDuration  = 30 * time.Second
 	refreshDuration = 7 * 24 * time.Hour
 )
 

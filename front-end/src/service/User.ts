@@ -26,19 +26,22 @@ export type User = {
 }
 
 class Impl implements Service {
-    private refreshToken: null | string
-    private accessSyncToken: null | string
+    private refreshToken: string
+    private accessSyncToken: string
+    private timeout: null | number
 
     public constructor() {
-        this.refreshToken = null
-        this.accessSyncToken = null
+        this.refreshToken = ""
+        this.accessSyncToken = ""
+        this.timeout = null
     }
 
     public Reload(): null | Response<User> {
-        this.refreshToken = localStorage.getItem(refreshTokenKey)
-        if(!this.refreshToken) {
+        const refreshToken = localStorage.getItem(refreshTokenKey)
+        if(!refreshToken) {
             return null
         }
+        this.refreshToken = refreshToken
         return this.Access()
     }
 
@@ -77,6 +80,7 @@ class Impl implements Service {
             res => {
                 this.accessSyncToken = res.accessSyncToken
                 this.refreshToken = res.refreshToken
+                this.refresh(res.accessDuration)
                 if(data.remember) {
                     localStorage.setItem(refreshTokenKey, this.refreshToken!)
                 }
@@ -101,8 +105,8 @@ class Impl implements Service {
                 }
             ),
             () => {
-                this.refreshToken = null
-                this.accessSyncToken = null
+                this.refreshToken = ""
+                this.accessSyncToken = ""
                 localStorage.removeItem(refreshTokenKey)
             }
         )
@@ -123,8 +127,24 @@ class Impl implements Service {
         )
     }
 
+    private refresh(duration: number) {
+        const r = Math.random()
+        const time = Math.floor(0.3 * (1 + r) / 2 * duration)
+        const timeout = setTimeout(() => {
+            this.Access()
+                .OnResult(() => console.log("refreshing access"))
+                .OnFail(() => this.refresh(retryTime))
+                .OnError(err => {
+                    //sign out
+                    console.log(err)
+                })
+                .Handle()
+        }, time)
+    }
+
     private consume(res: any): User {
         this.accessSyncToken = res.accessSyncToken
+        this.refresh(res.accessDuration)
         return {
             name: res.name!,
             email: res.email!
@@ -146,3 +166,5 @@ const url = {
 }
 
 const refreshTokenKey = "$__refresh-toke__$"
+
+const retryTime = 500
